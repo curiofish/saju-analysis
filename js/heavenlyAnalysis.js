@@ -15,6 +15,18 @@ function analyzeFiveElements(saju) {
     return elements;
 }
 
+// 건강 조언 생성
+function generateHealthAdvice(dominantElement) {
+    const healthAdvice = {
+        '木': '간 건강에 주의하고, 스트레스 관리가 중요합니다. 규칙적인 운동과 충분한 휴식이 필요합니다.',
+        '火': '심장 건강에 주의하고, 과도한 운동을 피하세요. 적절한 운동과 스트레스 관리가 중요합니다.',
+        '土': '소화기 건강에 주의하고, 규칙적인 식사가 중요합니다. 과식을 피하고 균형 잡힌 식단을 유지하세요.',
+        '金': '호흡기 건강에 주의하고, 실내 환기가 중요합니다. 규칙적인 호흡 운동과 맑은 공기가 필요합니다.',
+        '水': '신장 건강에 주의하고, 수분 섭취가 중요합니다. 과로를 피하고 적절한 휴식을 취하세요.'
+    };
+    return healthAdvice[dominantElement] || '전반적인 건강 관리가 중요합니다.';
+}
+
 // 천복 강도 계산
 function calculateFortuneStrength(elements) {
     const total = Object.values(elements).reduce((a, b) => a + b, 0);
