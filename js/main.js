@@ -5,6 +5,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const hour24Input = document.getElementById('hour24Input');
     const hourTraditionalInput = document.getElementById('hourTraditionalInput');
     const submitButton = document.querySelector('button[type="submit"]');
+    const scrollToTopButton = document.getElementById('scrollToTop');
+
+    // 스크롤 이벤트 리스너 추가
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            scrollToTopButton.style.display = 'block';
+        } else {
+            scrollToTopButton.style.display = 'none';
+        }
+    });
+
+    // 맨 위로 가기 버튼 클릭 이벤트
+    scrollToTopButton.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
 
     // 생시 입력 방식 전환
     birthHourType.addEventListener('change', function() {
