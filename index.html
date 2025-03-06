@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사주팔자 분석 프로그램</title>
+    <link rel="stylesheet" href="src/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>사주팔자 분석 프로그램</h1>
+            <p>당신의 운명을 과학적으로 분석해드립니다</p>
+        </header>
+
+        <main>
+            <section class="input-section">
+                <h2>생년월일시 입력</h2>
+                <form id="sajuForm">
+                    <div class="form-group">
+                        <label for="name">이름</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="birthDate">생년월일시</label>
+                        <input type="datetime-local" id="birthDate" name="birthDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="isLunar">음력 여부</label>
+                        <input type="checkbox" id="isLunar" name="isLunar">
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">성별</label>
+                        <select id="gender" name="gender" required>
+                            <option value="">선택하세요</option>
+                            <option value="male">남성</option>
+                            <option value="female">여성</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">태어난 지역</label>
+                        <input type="text" id="location" name="location">
+                    </div>
+                    <button type="submit">분석하기</button>
+                </form>
+            </section>
+
+            <section class="result-section" style="display: none;">
+                <h2>분석 결과</h2>
+                <div class="saju-chart">
+                    <div class="pillar year-pillar">
+                        <span class="heavenly-stem"></span>
+                        <span class="earthly-branch"></span>
+                    </div>
+                    <div class="pillar month-pillar">
+                        <span class="heavenly-stem"></span>
+                        <span class="earthly-branch"></span>
+                    </div>
+                    <div class="pillar day-pillar">
+                        <span class="heavenly-stem"></span>
+                        <span class="earthly-branch"></span>
+                    </div>
+                    <div class="pillar hour-pillar">
+                        <span class="heavenly-stem"></span>
+                        <span class="earthly-branch"></span>
+                    </div>
+                </div>
+                <div class="analysis-result">
+                    <h3>성격 및 기질</h3>
+                    <p id="personality"></p>
+                    <h3>직업 적성</h3>
+                    <p id="career"></p>
+                    <h3>건강</h3>
+                    <p id="health"></p>
+                    <h3>대인관계</h3>
+                    <p id="relationships"></p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2024 사주팔자 분석 프로그램. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="src/static/js/main.js"></script>
+</body>
+</html> 
