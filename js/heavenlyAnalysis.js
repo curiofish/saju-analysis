@@ -22,6 +22,50 @@ function calculateFortuneStrength(elements) {
     return (maxElement / total) * 100;
 }
 
+// 천수 계산
+function calculateLongevity(elements) {
+    const total = Object.values(elements).reduce((a, b) => a + b, 0);
+    const balance = Object.values(elements).reduce((score, count) => {
+        return score + (count / total) * 20;
+    }, 0);
+    return Math.round(balance);
+}
+
+// 천재 강도 계산
+function calculateTalentStrength(elements) {
+    const total = Object.values(elements).reduce((a, b) => a + b, 0);
+    const maxElement = Math.max(...Object.values(elements));
+    return (maxElement / total) * 100;
+}
+
+// 천권 강도 계산
+function calculatePowerStrength(elements) {
+    const total = Object.values(elements).reduce((a, b) => a + b, 0);
+    const maxElement = Math.max(...Object.values(elements));
+    return (maxElement / total) * 100;
+}
+
+// 천덕 강도 계산
+function calculateVirtueStrength(elements) {
+    const total = Object.values(elements).reduce((a, b) => a + b, 0);
+    const maxElement = Math.max(...Object.values(elements));
+    return (maxElement / total) * 100;
+}
+
+// 천식 강도 계산
+function calculateSustenanceStrength(elements) {
+    const total = Object.values(elements).reduce((a, b) => a + b, 0);
+    const maxElement = Math.max(...Object.values(elements));
+    return (maxElement / total) * 100;
+}
+
+// 천귀 강도 계산
+function calculateNobilityStrength(elements) {
+    const total = Object.values(elements).reduce((a, b) => a + b, 0);
+    const maxElement = Math.max(...Object.values(elements));
+    return (maxElement / total) * 100;
+}
+
 // 천격 분석
 function analyzeHeavenlyPattern(saju) {
     const stems = Object.values(saju).map(pillar => pillar.stem);
