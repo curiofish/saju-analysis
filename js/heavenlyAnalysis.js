@@ -602,6 +602,224 @@ function analyzeHeavenlyStemConflict(saju) {
     return foundConflicts;
 }
 
+// 궁합 분석
+function analyzeCompatibility(saju1, saju2) {
+    const elements1 = analyzeFiveElements(saju1);
+    const elements2 = analyzeFiveElements(saju2);
+    
+    // 오행 궁합 분석
+    const elementCompatibility = analyzeElementCompatibility(elements1, elements2);
+    
+    // 천간 궁합 분석
+    const stemCompatibility = analyzeStemCompatibility(saju1, saju2);
+    
+    // 지지 궁합 분석
+    const branchCompatibility = analyzeBranchCompatibility(saju1, saju2);
+    
+    // 전체 궁합 점수 계산
+    const totalScore = calculateTotalCompatibilityScore(elementCompatibility, stemCompatibility, branchCompatibility);
+    
+    return {
+        elementCompatibility,
+        stemCompatibility,
+        branchCompatibility,
+        totalScore,
+        advice: generateCompatibilityAdvice(elementCompatibility, stemCompatibility, branchCompatibility)
+    };
+}
+
+// 오행 궁합 분석
+function analyzeElementCompatibility(elements1, elements2) {
+    const compatibilityMatrix = {
+        '木': { '木': 0.8, '火': 0.9, '土': 0.6, '金': 0.4, '水': 0.7 },
+        '火': { '木': 0.9, '火': 0.8, '土': 0.7, '金': 0.5, '水': 0.4 },
+        '土': { '木': 0.6, '火': 0.7, '土': 0.8, '金': 0.9, '水': 0.5 },
+        '金': { '木': 0.4, '火': 0.5, '土': 0.9, '金': 0.8, '水': 0.7 },
+        '水': { '木': 0.7, '火': 0.4, '土': 0.5, '金': 0.7, '水': 0.8 }
+    };
+    
+    const dominantElement1 = Object.entries(elements1)
+        .sort(([,a], [,b]) => b - a)[0][0];
+    const dominantElement2 = Object.entries(elements2)
+        .sort(([,a], [,b]) => b - a)[0][0];
+    
+    return {
+        score: compatibilityMatrix[dominantElement1][dominantElement2],
+        elements: [dominantElement1, dominantElement2],
+        description: generateElementCompatibilityDescription(dominantElement1, dominantElement2)
+    };
+}
+
+// 천간 궁합 분석
+function analyzeStemCompatibility(saju1, saju2) {
+    const stems1 = Object.values(saju1).map(pillar => pillar.stem);
+    const stems2 = Object.values(saju2).map(pillar => pillar.stem);
+    
+    const combinations = {
+        '甲己': '토합',
+        '乙庚': '금합',
+        '丙辛': '수합',
+        '丁壬': '목합',
+        '戊癸': '화합'
+    };
+    
+    let foundCombinations = [];
+    stems1.forEach(stem1 => {
+        stems2.forEach(stem2 => {
+            const combination = stem1 + stem2;
+            if (combinations[combination]) {
+                foundCombinations.push({
+                    stems: combination,
+                    type: combinations[combination]
+                });
+            }
+        });
+    });
+    
+    return {
+        combinations: foundCombinations,
+        score: calculateStemCompatibilityScore(foundCombinations)
+    };
+}
+
+// 지지 궁합 분석
+function analyzeBranchCompatibility(saju1, saju2) {
+    const branches1 = Object.values(saju1).map(pillar => pillar.branch);
+    const branches2 = Object.values(saju2).map(pillar => pillar.branch);
+    
+    const combinations = {
+        '子丑': '토합',
+        '寅亥': '목합',
+        '卯戌': '화합',
+        '辰酉': '금합',
+        '巳申': '수합',
+        '午未': '화합'
+    };
+    
+    let foundCombinations = [];
+    branches1.forEach(branch1 => {
+        branches2.forEach(branch2 => {
+            const combination = branch1 + branch2;
+            if (combinations[combination]) {
+                foundCombinations.push({
+                    branches: combination,
+                    type: combinations[combination]
+                });
+            }
+        });
+    });
+    
+    return {
+        combinations: foundCombinations,
+        score: calculateBranchCompatibilityScore(foundCombinations)
+    };
+}
+
+// 전체 궁합 점수 계산
+function calculateTotalCompatibilityScore(elementCompatibility, stemCompatibility, branchCompatibility) {
+    const elementWeight = 0.4;
+    const stemWeight = 0.3;
+    const branchWeight = 0.3;
+    
+    return (
+        elementCompatibility.score * elementWeight +
+        stemCompatibility.score * stemWeight +
+        branchCompatibility.score * branchWeight
+    );
+}
+
+// 궁합 조언 생성
+function generateCompatibilityAdvice(elementCompatibility, stemCompatibility, branchCompatibility) {
+    const totalScore = calculateTotalCompatibilityScore(elementCompatibility, stemCompatibility, branchCompatibility);
+    const advice = [];
+    
+    // 오행 궁합 조언
+    advice.push(elementCompatibility.description);
+    
+    // 천간 궁합 조언
+    if (stemCompatibility.combinations.length > 0) {
+        advice.push(`천간 궁합: ${stemCompatibility.combinations.map(combo => 
+            `${combo.stems}(${combo.type})`).join(', ')}`);
+    }
+    
+    // 지지 궁합 조언
+    if (branchCompatibility.combinations.length > 0) {
+        advice.push(`지지 궁합: ${branchCompatibility.combinations.map(combo => 
+            `${combo.branches}(${combo.type})`).join(', ')}`);
+    }
+    
+    // 전체 궁합 평가
+    let overallEvaluation = '';
+    if (totalScore >= 0.8) {
+        overallEvaluation = '매우 좋은 궁합입니다. 서로를 보완하고 발전시킬 수 있는 관계입니다.';
+    } else if (totalScore >= 0.6) {
+        overallEvaluation = '좋은 궁합입니다. 서로를 이해하고 조화를 이루며 발전할 수 있습니다.';
+    } else if (totalScore >= 0.4) {
+        overallEvaluation = '보통의 궁합입니다. 서로의 차이를 이해하고 배려하면 좋은 관계를 만들 수 있습니다.';
+    } else {
+        overallEvaluation = '주의가 필요한 궁합입니다. 서로의 차이를 인정하고 이해하는 것이 중요합니다.';
+    }
+    
+    advice.push(overallEvaluation);
+    
+    return advice.join('\n');
+}
+
+// 오행 궁합 설명 생성
+function generateElementCompatibilityDescription(element1, element2) {
+    const descriptions = {
+        '木': {
+            '木': '두 사람 모두 창의적이고 발전적인 성향을 가지고 있어 서로의 아이디어를 발전시킬 수 있습니다.',
+            '火': '목이 화를 생하므로 서로를 발전시키는 관계입니다.',
+            '土': '목이 토를 극하므로 갈등이 있을 수 있으나, 서로를 보완하는 관계가 될 수 있습니다.',
+            '金': '금이 목을 극하므로 갈등이 있을 수 있으나, 서로를 단련시키는 관계가 될 수 있습니다.',
+            '水': '수가 목을 생하므로 서로를 돕는 관계입니다.'
+        },
+        '火': {
+            '木': '목이 화를 생하므로 서로를 발전시키는 관계입니다.',
+            '火': '두 사람 모두 열정적이고 활기찬 성향을 가지고 있어 서로를 격려할 수 있습니다.',
+            '土': '화가 토를 생하므로 서로를 발전시키는 관계입니다.',
+            '金': '화가 금을 극하므로 갈등이 있을 수 있으나, 서로를 단련시키는 관계가 될 수 있습니다.',
+            '水': '수가 화를 극하므로 갈등이 있을 수 있으나, 서로를 보완하는 관계가 될 수 있습니다.'
+        },
+        '土': {
+            '木': '목이 토를 극하므로 갈등이 있을 수 있으나, 서로를 보완하는 관계가 될 수 있습니다.',
+            '火': '화가 토를 생하므로 서로를 발전시키는 관계입니다.',
+            '土': '두 사람 모두 안정적이고 신뢰할 수 있는 성향을 가지고 있어 서로를 믿을 수 있습니다.',
+            '金': '토가 금을 생하므로 서로를 발전시키는 관계입니다.',
+            '水': '수가 토를 극하므로 갈등이 있을 수 있으나, 서로를 보완하는 관계가 될 수 있습니다.'
+        },
+        '金': {
+            '木': '금이 목을 극하므로 갈등이 있을 수 있으나, 서로를 단련시키는 관계가 될 수 있습니다.',
+            '火': '화가 금을 극하므로 갈등이 있을 수 있으나, 서로를 단련시키는 관계가 될 수 있습니다.',
+            '土': '토가 금을 생하므로 서로를 발전시키는 관계입니다.',
+            '金': '두 사람 모두 원칙적이고 체계적인 성향을 가지고 있어 서로를 이해할 수 있습니다.',
+            '水': '금이 수를 생하므로 서로를 발전시키는 관계입니다.'
+        },
+        '水': {
+            '木': '수가 목을 생하므로 서로를 돕는 관계입니다.',
+            '火': '수가 화를 극하므로 갈등이 있을 수 있으나, 서로를 보완하는 관계가 될 수 있습니다.',
+            '土': '수가 토를 극하므로 갈등이 있을 수 있으나, 서로를 보완하는 관계가 될 수 있습니다.',
+            '金': '금이 수를 생하므로 서로를 발전시키는 관계입니다.',
+            '水': '두 사람 모두 지적이고 통찰력 있는 성향을 가지고 있어 서로를 이해할 수 있습니다.'
+        }
+    };
+    
+    return descriptions[element1][element2];
+}
+
+// 천간 궁합 점수 계산
+function calculateStemCompatibilityScore(combinations) {
+    if (combinations.length === 0) return 0.5;
+    return 0.5 + (combinations.length * 0.1);
+}
+
+// 지지 궁합 점수 계산
+function calculateBranchCompatibilityScore(combinations) {
+    if (combinations.length === 0) return 0.5;
+    return 0.5 + (combinations.length * 0.1);
+}
+
 // 결과 생성 함수들
 function generatePatternAnalysis(pattern) {
     return `당신의 천격은 ${pattern.overallPattern}의 조화를 보여주고 있습니다. 

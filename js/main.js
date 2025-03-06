@@ -865,8 +865,26 @@ document.addEventListener('DOMContentLoaded', function() {
             const elements = analyzeFiveElements(saju);
             const analysisResult = analyzeResult(saju, elements);
 
+            // 상대방 사주 계산 (입력된 경우)
+            let partnerSaju = null;
+            let compatibilityResult = null;
+            const partnerYear = document.getElementById('partnerBirthYear').value;
+            const partnerMonth = document.getElementById('partnerBirthMonth').value;
+            const partnerDay = document.getElementById('partnerBirthDay').value;
+            const partnerHour = document.getElementById('partnerBirthHour').value;
+
+            if (partnerYear && partnerMonth && partnerDay && partnerHour) {
+                partnerSaju = calculateSaju(
+                    parseInt(partnerYear),
+                    parseInt(partnerMonth),
+                    parseInt(partnerDay),
+                    parseInt(partnerHour)
+                );
+                compatibilityResult = analyzeCompatibility(saju, partnerSaju);
+            }
+
             // 결과 표시
-            displayResults(saju, analysisResult);
+            displayResults(saju, analysisResult, compatibilityResult);
             resultSection.style.display = 'block';
             resultSection.scrollIntoView({ behavior: 'smooth' });
 
@@ -876,6 +894,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const isLunar = document.getElementById('isLunar').value === 'yes';
             const location = document.getElementById('location').value;
             document.getElementById('basicInfo').textContent = `이름: ${name}\n생년월일시: ${year}년 ${month}월 ${day}일 ${hour}시\n성별: ${gender === 'male' ? '남성' : '여성'}\n음력: ${isLunar ? '예' : '아니오'}\n태어난 지역: ${location || '미입력'}`;
+            
+            // 궁합 분석 결과 표시
+            if (compatibilityResult) {
+                document.getElementById('compatibility').textContent = compatibilityResult.advice;
+            } else {
+                document.getElementById('compatibility').textContent = '궁합 분석을 위해서는 상대방의 생년월일시를 입력해주세요.';
+            }
             
             // 천고 표시
             document.getElementById('heavenlyLuck').textContent = `${name}님의 천고는 재성(財星)과 인성(印星)의 조합이 특별합니다. 특히 지지(地支)에서 축(丑), 미(未), 술(戌)과 같은 '창고'를 의미하는 지지에 재성이나 인성이 위치하여 천고가 강한 형상입니다. 이는 물질적 풍요와 행운이 축적되어 있음을 의미하며, 특히 30대 후반부터 40대 초반에 그 복이 본격적으로 발현될 것으로 보입니다. 재성과 인성이 적절히 배치되어 있어 안정적인 재물 축적과 학문적 성취가 가능할 것으로 예상됩니다. 특히 금(金)과 목(木)의 조화가 잘 이루어져 있어, 창의적인 아이디어를 통해 재물을 얻을 수 있는 구조입니다. 35세 전후에 큰 재물의 기회가 있을 것으로 보이며, 이는 하늘이 부여한 천고의 발현이 될 것입니다.`;
@@ -895,12 +920,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    function displayResults(calculateResult, analysisResult) {
+    function displayResults(calculateResult, analysisResult, compatibilityResult) {
         // 기존 결과 표시
         displayBasicResults(calculateResult, analysisResult);
         
         // 새로운 천(天) 관련 결과 표시
         displayHeavenlyResults(analysisResult);
+        
+        // 궁합 분석 결과 표시
+        if (compatibilityResult) {
+            displayCompatibilityResults(compatibilityResult);
+        }
     }
 
     function displayBasicResults(calculateResult, analysisResult) {
@@ -1038,6 +1068,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const stemConflictElement = document.getElementById('heavenlyStemConflict');
         if (stemConflictElement) {
             stemConflictElement.textContent = generateStemConflictAnalysis(analysisResult.stemConflict);
+        }
+    }
+
+    function displayCompatibilityResults(compatibilityResult) {
+        const compatibilityElement = document.getElementById('compatibility');
+        if (compatibilityElement) {
+            compatibilityElement.textContent = compatibilityResult.advice;
         }
     }
 
