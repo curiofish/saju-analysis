@@ -1,4 +1,39 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // 연도 선택 옵션 생성
+    const yearSelect = document.getElementById('birthYear');
+    const currentYear = new Date().getFullYear();
+    for (let year = currentYear; year >= 1900; year--) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year + '년';
+        yearSelect.appendChild(option);
+    }
+
+    // 월 선택에 따른 일자 옵션 생성
+    const monthSelect = document.getElementById('birthMonth');
+    const daySelect = document.getElementById('birthDay');
+
+    function updateDays() {
+        const year = parseInt(yearSelect.value);
+        const month = parseInt(monthSelect.value);
+        
+        // 기존 일자 옵션 제거
+        daySelect.innerHTML = '<option value="">선택하세요</option>';
+        
+        if (year && month) {
+            const daysInMonth = new Date(year, month, 0).getDate();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const option = document.createElement('option');
+                option.value = day;
+                option.textContent = day + '일';
+                daySelect.appendChild(option);
+            }
+        }
+    }
+
+    monthSelect.addEventListener('change', updateDays);
+    yearSelect.addEventListener('change', updateDays);
+
     const sajuForm = document.getElementById('sajuForm');
     const resultSection = document.querySelector('.result-section');
 
@@ -7,7 +42,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = {
             name: document.getElementById('name').value,
-            birthDate: document.getElementById('birthDate').value,
+            birthYear: document.getElementById('birthYear').value,
+            birthMonth: document.getElementById('birthMonth').value,
+            birthDay: document.getElementById('birthDay').value,
+            birthHour: document.getElementById('birthHour').value,
             isLunar: document.getElementById('isLunar').checked,
             gender: document.getElementById('gender').value,
             location: document.getElementById('location').value
