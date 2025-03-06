@@ -91,6 +91,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // 결과 표시
         displayResults(calculateResult, analysisResult);
         resultSection.style.display = 'block';
+        
+        // 결과 섹션으로 스크롤
+        resultSection.scrollIntoView({ behavior: 'smooth' });
     });
 
     function displayResults(calculateResult, analysisResult) {
@@ -98,19 +101,32 @@ document.addEventListener('DOMContentLoaded', function() {
         const pillars = ['year', 'month', 'day', 'hour'];
         pillars.forEach(pillar => {
             const pillarElement = document.querySelector(`.${pillar}-pillar`);
-            pillarElement.querySelector('.heavenly-stem').textContent = calculateResult[pillar].stem;
-            pillarElement.querySelector('.earthly-branch').textContent = calculateResult[pillar].branch;
+            if (pillarElement) {
+                const stemElement = pillarElement.querySelector('.heavenly-stem');
+                const branchElement = pillarElement.querySelector('.earthly-branch');
+                if (stemElement) stemElement.textContent = calculateResult[pillar].stem;
+                if (branchElement) branchElement.textContent = calculateResult[pillar].branch;
+            }
         });
 
         // 분석 결과 표시
-        document.getElementById('basicInfo').textContent = analysisResult.basicInfo;
-        document.getElementById('personality').textContent = analysisResult.personality;
-        document.getElementById('career').textContent = analysisResult.career;
-        document.getElementById('health').textContent = analysisResult.health;
-        document.getElementById('relationships').textContent = analysisResult.relationships;
-        document.getElementById('love').textContent = analysisResult.love;
-        document.getElementById('wealth').textContent = analysisResult.wealth;
-        document.getElementById('luck').textContent = analysisResult.luck;
-        document.getElementById('advice').textContent = analysisResult.advice;
+        const resultElements = {
+            basicInfo: analysisResult.basicInfo,
+            personality: analysisResult.personality,
+            career: analysisResult.career,
+            health: analysisResult.health,
+            relationships: analysisResult.relationships,
+            love: analysisResult.love,
+            wealth: analysisResult.wealth,
+            luck: analysisResult.luck,
+            advice: analysisResult.advice
+        };
+
+        Object.entries(resultElements).forEach(([id, content]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = content;
+            }
+        });
     }
 }); 
