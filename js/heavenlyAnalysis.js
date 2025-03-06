@@ -1,3 +1,27 @@
+// 오행 분석
+function analyzeFiveElements(saju) {
+    const elements = {
+        '木': 0,
+        '火': 0,
+        '土': 0,
+        '金': 0,
+        '水': 0
+    };
+
+    Object.values(saju).forEach(pillar => {
+        elements[pillar.element]++;
+    });
+
+    return elements;
+}
+
+// 천복 강도 계산
+function calculateFortuneStrength(elements) {
+    const total = Object.values(elements).reduce((a, b) => a + b, 0);
+    const maxElement = Math.max(...Object.values(elements));
+    return (maxElement / total) * 100;
+}
+
 // 천격 분석
 function analyzeHeavenlyPattern(saju) {
     const stems = Object.values(saju).map(pillar => pillar.stem);

@@ -173,6 +173,34 @@ document.addEventListener('DOMContentLoaded', function() {
         return elements;
     }
 
+    // 천복 강도 계산
+    function calculateFortuneStrength(elements) {
+        const total = Object.values(elements).reduce((a, b) => a + b, 0);
+        const maxElement = Math.max(...Object.values(elements));
+        return (maxElement / total) * 100;
+    }
+
+    // 천복 분석
+    function analyzeHeavenlyFortune(saju) {
+        const elements = analyzeFiveElements(saju);
+        const dominantElement = Object.entries(elements)
+            .sort(([,a], [,b]) => b - a)[0][0];
+        
+        const fortunePatterns = {
+            '木': '창의적 재물',
+            '火': '열정적 재물',
+            '土': '안정적 재물',
+            '金': '체계적 재물',
+            '水': '지적 재물'
+        };
+        
+        return {
+            type: fortunePatterns[dominantElement],
+            strength: calculateFortuneStrength(elements),
+            timing: determineFortuneTiming(saju)
+        };
+    }
+
     // 천격 분석
     function analyzeHeavenlyPattern(saju) {
         const stems = Object.values(saju).map(pillar => pillar.stem);
@@ -255,27 +283,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return elementCounts;
     }
 
-    // 천복 분석
-    function analyzeHeavenlyFortune(saju) {
-        const elements = analyzeFiveElements(saju);
-        const dominantElement = Object.entries(elements)
-            .sort(([,a], [,b]) => b - a)[0][0];
-        
-        const fortunePatterns = {
-            '木': '창의적 재물',
-            '火': '열정적 재물',
-            '土': '안정적 재물',
-            '金': '체계적 재물',
-            '水': '지적 재물'
-        };
-        
-        return {
-            type: fortunePatterns[dominantElement],
-            strength: calculateFortuneStrength(elements),
-            timing: determineFortuneTiming(saju)
-        };
-    }
-
     // 천시 분석
     function analyzeHeavenlyTiming(saju) {
         const yearStem = saju.year.stem;
@@ -288,6 +295,75 @@ document.addEventListener('DOMContentLoaded', function() {
             minorTiming: determineMinorTiming(monthStem, dayStem),
             dailyTiming: determineDailyTiming(hourStem)
         };
+    }
+
+    // 주요 시기 결정
+    function determineMajorTiming(yearStem) {
+        const timingPatterns = {
+            '甲': '20-30대',
+            '乙': '20-30대',
+            '丙': '30-40대',
+            '丁': '30-40대',
+            '戊': '40-50대',
+            '己': '40-50대',
+            '庚': '50-60대',
+            '辛': '50-60대',
+            '壬': '60-70대',
+            '癸': '60-70대'
+        };
+        return timingPatterns[yearStem] || '전생애';
+    }
+
+    // 부가 시기 결정
+    function determineMinorTiming(monthStem, dayStem) {
+        const timingPatterns = {
+            '甲': '봄',
+            '乙': '봄',
+            '丙': '여름',
+            '丁': '여름',
+            '戊': '사계절',
+            '己': '사계절',
+            '庚': '가을',
+            '辛': '가을',
+            '壬': '겨울',
+            '癸': '겨울'
+        };
+        return `${timingPatterns[monthStem] || '사계절'}, ${timingPatterns[dayStem] || '사계절'}`;
+    }
+
+    // 일일 시기 결정
+    function determineDailyTiming(hourStem) {
+        const timingPatterns = {
+            '甲': '아침',
+            '乙': '아침',
+            '丙': '낮',
+            '丁': '낮',
+            '戊': '하루종일',
+            '己': '하루종일',
+            '庚': '저녁',
+            '辛': '저녁',
+            '壬': '밤',
+            '癸': '밤'
+        };
+        return timingPatterns[hourStem] || '하루종일';
+    }
+
+    // 천복 시기 결정
+    function determineFortuneTiming(saju) {
+        const yearStem = saju.year.stem;
+        const timingPatterns = {
+            '甲': '봄철',
+            '乙': '봄철',
+            '丙': '여름철',
+            '丁': '여름철',
+            '戊': '사계절',
+            '己': '사계절',
+            '庚': '가을철',
+            '辛': '가을철',
+            '壬': '겨울철',
+            '癸': '겨울철'
+        };
+        return timingPatterns[yearStem] || '사계절';
     }
 
     // 천수 분석
@@ -994,12 +1070,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (stemConflictElement) {
                 stemConflictElement.textContent = generateStemConflictAnalysis(analysisResult.stemConflict);
             }
-
-            // 사상의학 체질 분석 결과
-            const sasangElement = document.getElementById('sasangConstitution');
-            if (sasangElement) {
-                sasangElement.textContent = generateSasangAnalysis(dominantElement);
-            }
         } catch (error) {
             alert(error.message);
         } finally {
@@ -1176,7 +1246,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function generateLongevityAnalysis(longevity) {
         return `당신의 천수는 다음과 같습니다:
         건강 패턴: ${longevity.healthPattern.type}
-        관련 장기: ${longevity.healthPattern.organs.join(', ')}
         건강 조언: ${longevity.healthAdvice}`;
     }
 
@@ -1271,17 +1340,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return `당신의 천간충은 다음과 같습니다:
         ${conflicts.map(conflict => `${conflict.stems}: ${conflict.type}`).join('\n')}`;
-    }
-
-    // 사상의학 체질 분석 결과 생성
-    function generateSasangAnalysis(dominantElement) {
-        const sasangPatterns = {
-            '木': '태양인(太陽人) 체질입니다. 목(木)의 기운이 강한 태양인은 창의적이고 독립적인 성격을 가지고 있습니다. 체력이 좋고 활동적인 편이며, 새로운 도전을 즐기는 성향이 있습니다. 건강관리 측면에서는 간과 담낭을 주의해야 하며, 스트레스 관리가 중요합니다.',
-            '火': '소양인(少陽人) 체질입니다. 화(火)의 기운이 강한 소양인은 열정적이고 적극적인 성격을 가지고 있습니다. 리더십이 뛰어나고 의사결정이 빠른 편입니다. 건강관리 측면에서는 심장과 소장을 주의해야 하며, 과로를 피하는 것이 중요합니다.',
-            '土': '태음인(太陰人) 체질입니다. 토(土)의 기운이 강한 태음인은 안정적이고 신중한 성격을 가지고 있습니다. 책임감이 강하고 신뢰감 있는 편입니다. 건강관리 측면에서는 위와 비장을 주의해야 하며, 규칙적인 식사가 중요합니다.',
-            '金': '소음인(少陰人) 체질입니다. 금(金)의 기운이 강한 소음인은 정직하고 원칙적인 성격을 가지고 있습니다. 완벽을 추구하고 체계적인 것을 좋아합니다. 건강관리 측면에서는 폐와 대장을 주의해야 하며, 호흡기 건강관리가 중요합니다.',
-            '水': '평화인(平和人) 체질입니다. 수(水)의 기운이 강한 평화인은 지적이고 통찰력 있는 성격을 가지고 있습니다. 깊이 있는 사고를 하며 조화를 추구합니다. 건강관리 측면에서는 신장과 방광을 주의해야 하며, 수분 섭취가 중요합니다.'
-        };
-        return sasangPatterns[dominantElement];
     }
 }); 
