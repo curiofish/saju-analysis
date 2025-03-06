@@ -158,6 +158,9 @@ button:hover {
 }
 
 .saju-chart {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
     background-color: #fff;
     border: 2px solid #4a90e2;
     padding: 2rem;
@@ -167,11 +170,13 @@ button:hover {
 }
 
 .pillar {
+    text-align: center;
     background-color: #f8f9fa;
     border: 1px solid #ddd;
     padding: 1.5rem;
     border-radius: 8px;
     transition: all 0.3s ease;
+    min-width: 100px;
 }
 
 .pillar:hover {
@@ -180,6 +185,7 @@ button:hover {
 }
 
 .heavenly-stem {
+    display: block;
     color: #4a90e2;
     font-size: 2rem;
     font-weight: bold;
@@ -187,6 +193,7 @@ button:hover {
 }
 
 .earthly-branch {
+    display: block;
     color: #2c3e50;
     font-size: 2rem;
     font-weight: bold;
