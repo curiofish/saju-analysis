@@ -28,47 +28,36 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const formData = {
-            name: document.getElementById('name').value,
-            birthYear: year,
-            birthMonth: month,
-            birthDay: day,
-            birthHour: hour,
-            isLunar: document.getElementById('isLunar').checked,
-            gender: document.getElementById('gender').value,
-            location: document.getElementById('location').value
+        // 테스트용 결과 데이터
+        const calculateResult = {
+            year: {
+                stem: '甲',
+                branch: '子'
+            },
+            month: {
+                stem: '丙',
+                branch: '寅'
+            },
+            day: {
+                stem: '戊',
+                branch: '辰'
+            },
+            hour: {
+                stem: '庚',
+                branch: '午'
+            }
         };
 
-        try {
-            // 사주 계산 API 호출
-            const calculateResponse = await fetch('/api/calculate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
+        const analysisResult = {
+            personality: '당신은 성실하고 책임감이 강한 성격을 가지고 있습니다. 새로운 도전을 즐기며, 타인을 돕는 것을 좋아합니다.',
+            career: '관리직, 교육자, 의료인, 연구원 등의 직업이 적합합니다. 특히 타인을 돕고 가르치는 일에서 큰 성취를 이룰 수 있습니다.',
+            health: '심장과 혈관 건강에 주의가 필요합니다. 규칙적인 운동과 건강한 식습관을 유지하세요.',
+            relationships: '가족과의 관계가 매우 중요합니다. 특히 부모님과의 관계를 소중히 여기세요. 연인과의 관계에서는 서로를 이해하고 배려하는 자세가 필요합니다.'
+        };
 
-            const calculateResult = await calculateResponse.json();
-
-            // 사주 분석 API 호출
-            const analysisResponse = await fetch('/api/analysis', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(calculateResult)
-            });
-
-            const analysisResult = await analysisResponse.json();
-
-            // 결과 표시
-            displayResults(calculateResult, analysisResult);
-            resultSection.style.display = 'block';
-        } catch (error) {
-            console.error('Error:', error);
-            alert('분석 중 오류가 발생했습니다. 다시 시도해주세요.');
-        }
+        // 결과 표시
+        displayResults(calculateResult, analysisResult);
+        resultSection.style.display = 'block';
     });
 
     function displayResults(calculateResult, analysisResult) {
