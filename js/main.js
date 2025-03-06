@@ -109,6 +109,25 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 결과 섹션으로 스크롤
             resultSection.scrollIntoView({ behavior: 'smooth' });
+
+            // 기본 정보 표시
+            const name = document.getElementById('name').value;
+            const gender = document.getElementById('gender').value;
+            const isLunar = document.getElementById('isLunar').value === 'yes';
+            const location = document.getElementById('location').value;
+            document.getElementById('basicInfo').textContent = `이름: ${name}\n생년월일시: ${year}년 ${month}월 ${day}일 ${hour}시\n성별: ${gender === 'male' ? '남성' : '여성'}\n음력: ${isLunar ? '예' : '아니오'}\n태어난 지역: ${location || '미입력'}`;
+            
+            // 천고 표시
+            document.getElementById('heavenlyLuck').textContent = `천고는 하늘에서 주어진 복을 의미합니다. ${name}님의 천고는...`;
+            
+            // 천역 표시
+            document.getElementById('heavenlyDuty').textContent = `천역은 하늘에서 부여받은 임무를 의미합니다. ${name}님의 천역은...`;
+            
+            // 천문 표시
+            document.getElementById('heavenlyPattern').textContent = `천문은 하늘의 문양을 의미합니다. ${name}님의 천문은...`;
+            
+            // 천예 표시
+            document.getElementById('heavenlyArt').textContent = `천예는 하늘에서 부여받은 예술적 재능을 의미합니다. ${name}님의 천예는...`;
         } catch (error) {
             alert(error.message);
         } finally {
