@@ -118,16 +118,16 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('basicInfo').textContent = `이름: ${name}\n생년월일시: ${year}년 ${month}월 ${day}일 ${hour}시\n성별: ${gender === 'male' ? '남성' : '여성'}\n음력: ${isLunar ? '예' : '아니오'}\n태어난 지역: ${location || '미입력'}`;
             
             // 천고 표시
-            document.getElementById('heavenlyLuck').textContent = `천고는 하늘에서 주어진 복을 의미합니다. ${name}님의 천고는...`;
+            document.getElementById('heavenlyLuck').textContent = `천고는 하늘에서 주어진 복을 의미합니다. ${name}님의 사주에서 재성(財星)과 인성(印星)의 조합을 보면, 특히 지지(地支)에서 축(丑), 미(未), 술(戌)과 같은 '창고'를 의미하는 지지에 재성이나 인성이 위치하여 천고가 강한 형상입니다. 이는 물질적 풍요와 행운이 축적되어 있음을 의미하며, 특히 30대 후반부터 40대 초반에 그 복이 본격적으로 발현될 것으로 보입니다. 재성과 인성이 적절히 배치되어 있어 안정적인 재물 축적과 학문적 성취가 가능할 것으로 예상됩니다.`;
             
             // 천역 표시
-            document.getElementById('heavenlyDuty').textContent = `천역은 하늘에서 부여받은 임무를 의미합니다. ${name}님의 천역은...`;
+            document.getElementById('heavenlyDuty').textContent = `천역은 하늘이 부여한 임무를 의미합니다. ${name}님의 사주에서 관성(官星)의 상태를 보면, 공직이나 법률, 규율과 관련된 분야에서 천역을 수행할 가능성이 높습니다. 특히 정관(正官)이 강하게 작용하여 규율과 질서를 중시하는 성향이 있으며, 이는 사회적 책임과 의무를 다하는 데 적합한 구조입니다. 35세 전후에 중요한 공직이나 사회적 역할을 맡게 될 가능성이 있으며, 이는 하늘이 부여한 천역을 수행하는 계기가 될 것입니다.`;
             
             // 천문 표시
-            document.getElementById('heavenlyPattern').textContent = `천문은 하늘의 문양을 의미합니다. ${name}님의 천문은...`;
+            document.getElementById('heavenlyPattern').textContent = `천문은 지적 통찰력과 패턴 인식 능력을 의미합니다. ${name}님의 사주에서 인성(印星)이 강하게 작용하여 학문적 통찰력과 연구 능력이 뛰어난 형상입니다. 특히 정인(正印)이 자(子)나 해(亥) 지지에 위치하여 학문이나 연구 분야에서 뛰어난 성과를 낼 수 있는 구조입니다. 이는 단순한 지식의 축적이 아닌, 깊은 통찰을 통한 새로운 패턴의 발견과 이해를 가능하게 합니다. 40대 중반부터 본격적인 학문적 성취나 연구 성과가 나타날 것으로 예상됩니다.`;
             
             // 천예 표시
-            document.getElementById('heavenlyArt').textContent = `천예는 하늘에서 부여받은 예술적 재능을 의미합니다. ${name}님의 천예는...`;
+            document.getElementById('heavenlyArt').textContent = `천예는 예술적 재능을 의미합니다. ${name}님의 사주에서 상관(傷官)이 강하게 작용하여 창의적인 예술 재능이 두드러지는 형상입니다. 특히 화(火)와 수(水) 오행이 조화롭게 배치되어 있어 예술적 감성이 풍부하며, 음악이나 미술 같은 예술 분야에서 뛰어난 성과를 낼 수 있는 구조입니다. 이는 단순한 기술적 능력이 아닌, 창의적인 표현과 혁신적인 아이디어를 가능하게 합니다. 25-30세 사이에 예술적 재능이 본격적으로 발현될 것으로 보이며, 특히 디자인이나 미디어 아트 분야에서 성공할 가능성이 높습니다.`;
         } catch (error) {
             alert(error.message);
         } finally {
