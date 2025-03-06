@@ -6,13 +6,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const hourTraditionalInput = document.getElementById('hourTraditionalInput');
     const submitButton = document.querySelector('button[type="submit"]');
     const scrollToTopButton = document.getElementById('scrollToTop');
+    const downloadPDFButton = document.getElementById('downloadPDF');
 
     // 스크롤 이벤트 리스너 추가
     window.addEventListener('scroll', function() {
         if (window.pageYOffset > 300) {
             scrollToTopButton.style.display = 'block';
+            downloadPDFButton.style.display = 'block';
         } else {
             scrollToTopButton.style.display = 'none';
+            downloadPDFButton.style.display = 'none';
         }
     });
 
@@ -21,6 +24,30 @@ document.addEventListener('DOMContentLoaded', function() {
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
+        });
+    });
+
+    // PDF 다운로드 버튼 클릭 이벤트
+    downloadPDFButton.addEventListener('click', function() {
+        const name = document.getElementById('name').value;
+        const element = document.querySelector('.result-section');
+        const opt = {
+            margin: 1,
+            filename: `${name}_사주분석.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+
+        // PDF 생성 전에 로딩 상태 표시
+        downloadPDFButton.disabled = true;
+        downloadPDFButton.textContent = '⏳';
+
+        // PDF 생성
+        html2pdf().set(opt).from(element).save().then(() => {
+            // PDF 생성 완료 후 버튼 상태 복구
+            downloadPDFButton.disabled = false;
+            downloadPDFButton.textContent = '📄';
         });
     });
 

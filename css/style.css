@@ -283,4 +283,61 @@ footer {
         height: 40px;
         font-size: 20px;
     }
+}
+
+/* PDF 다운로드 버튼 스타일 */
+.download-pdf {
+    position: fixed;
+    bottom: 30px;
+    right: 90px;
+    width: 50px;
+    height: 50px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    display: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.download-pdf:hover {
+    background-color: #357abd;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.download-pdf:active {
+    transform: translateY(1px);
+}
+
+@media (max-width: 768px) {
+    .download-pdf {
+        bottom: 20px;
+        right: 80px;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+}
+
+/* PDF 생성 시 스타일 */
+@media print {
+    .scroll-to-top,
+    .download-pdf,
+    .input-section,
+    button[type="submit"] {
+        display: none !important;
+    }
+    
+    .container {
+        padding: 0;
+    }
+    
+    .result-section {
+        box-shadow: none;
+    }
 } 
