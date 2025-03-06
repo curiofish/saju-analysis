@@ -37,15 +37,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const sajuForm = document.getElementById('sajuForm');
     const resultSection = document.querySelector('.result-section');
 
+    // 입력값 검증 함수
+    function validateDate(year, month, day) {
+        const date = new Date(year, month - 1, day);
+        return date.getDate() === day && date.getMonth() === month - 1;
+    }
+
     sajuForm.addEventListener('submit', async function(e) {
         e.preventDefault();
 
+        const year = parseInt(document.getElementById('birthYear').value);
+        const month = parseInt(document.getElementById('birthMonth').value);
+        const day = parseInt(document.getElementById('birthDay').value);
+        const hour = parseInt(document.getElementById('birthHour').value);
+
+        // 날짜 유효성 검사
+        if (!validateDate(year, month, day)) {
+            alert('올바른 날짜를 입력해주세요.');
+            return;
+        }
+
+        // 시간 유효성 검사
+        if (hour < 0 || hour > 23) {
+            alert('올바른 시간을 입력해주세요 (0-23).');
+            return;
+        }
+
         const formData = {
             name: document.getElementById('name').value,
-            birthYear: document.getElementById('birthYear').value,
-            birthMonth: document.getElementById('birthMonth').value,
-            birthDay: document.getElementById('birthDay').value,
-            birthHour: document.getElementById('birthHour').value,
+            birthYear: year,
+            birthMonth: month,
+            birthDay: day,
+            birthHour: hour,
             isLunar: document.getElementById('isLunar').checked,
             gender: document.getElementById('gender').value,
             location: document.getElementById('location').value

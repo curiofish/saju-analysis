@@ -23,53 +23,20 @@
                     </div>
                     <div class="form-group">
                         <label for="birthYear">생년</label>
-                        <select id="birthYear" name="birthYear" required>
-                            <option value="">선택하세요</option>
-                            <!-- JavaScript로 1900년부터 현재까지의 연도가 자동으로 추가됩니다 -->
-                        </select>
+                        <input type="number" id="birthYear" name="birthYear" min="1900" max="2100" required placeholder="예: 1990">
                     </div>
                     <div class="form-group">
                         <label for="birthMonth">생월</label>
-                        <select id="birthMonth" name="birthMonth" required>
-                            <option value="">선택하세요</option>
-                            <option value="1">1월</option>
-                            <option value="2">2월</option>
-                            <option value="3">3월</option>
-                            <option value="4">4월</option>
-                            <option value="5">5월</option>
-                            <option value="6">6월</option>
-                            <option value="7">7월</option>
-                            <option value="8">8월</option>
-                            <option value="9">9월</option>
-                            <option value="10">10월</option>
-                            <option value="11">11월</option>
-                            <option value="12">12월</option>
-                        </select>
+                        <input type="number" id="birthMonth" name="birthMonth" min="1" max="12" required placeholder="예: 3">
                     </div>
                     <div class="form-group">
                         <label for="birthDay">생일</label>
-                        <select id="birthDay" name="birthDay" required>
-                            <option value="">선택하세요</option>
-                            <!-- JavaScript로 선택된 월에 따라 일수가 자동으로 추가됩니다 -->
-                        </select>
+                        <input type="number" id="birthDay" name="birthDay" min="1" max="31" required placeholder="예: 15">
                     </div>
                     <div class="form-group">
                         <label for="birthHour">생시</label>
-                        <select id="birthHour" name="birthHour" required>
-                            <option value="">선택하세요</option>
-                            <option value="0">자시 (23:00-01:00)</option>
-                            <option value="1">축시 (01:00-03:00)</option>
-                            <option value="2">인시 (03:00-05:00)</option>
-                            <option value="3">묘시 (05:00-07:00)</option>
-                            <option value="4">진시 (07:00-09:00)</option>
-                            <option value="5">사시 (09:00-11:00)</option>
-                            <option value="6">오시 (11:00-13:00)</option>
-                            <option value="7">미시 (13:00-15:00)</option>
-                            <option value="8">신시 (15:00-17:00)</option>
-                            <option value="9">유시 (17:00-19:00)</option>
-                            <option value="10">술시 (19:00-21:00)</option>
-                            <option value="11">해시 (21:00-23:00)</option>
-                        </select>
+                        <input type="number" id="birthHour" name="birthHour" min="0" max="23" required placeholder="예: 14">
+                        <small class="input-help">0-23 사이의 숫자를 입력하세요 (예: 14는 오후 2시)</small>
                     </div>
                     <div class="form-group">
                         <label for="isLunar">음력 여부</label>
