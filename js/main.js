@@ -33,6 +33,245 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.textContent = isLoading ? '분석 중...' : '분석하기';
     }
 
+    // 천간(天干) 배열
+    const heavenlyStems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+    // 지지(地支) 배열
+    const earthlyBranches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+    // 오행(五行) 배열
+    const fiveElements = ['木', '火', '土', '金', '水'];
+
+    // 연도 천간 계산
+    function calculateYearStem(year) {
+        return heavenlyStems[(year - 4) % 10];
+    }
+
+    // 연도 지지 계산
+    function calculateYearBranch(year) {
+        return earthlyBranches[(year - 4) % 12];
+    }
+
+    // 월 천간 계산
+    function calculateMonthStem(year, month) {
+        const yearStemIndex = (year - 4) % 10;
+        const monthOffset = (yearStemIndex % 5) * 2;
+        return heavenlyStems[(monthOffset + month - 1) % 10];
+    }
+
+    // 월 지지 계산
+    function calculateMonthBranch(month) {
+        return earthlyBranches[(month + 1) % 12];
+    }
+
+    // 일 천간 계산 (간단한 버전)
+    function calculateDayStem(day) {
+        return heavenlyStems[day % 10];
+    }
+
+    // 일 지지 계산 (간단한 버전)
+    function calculateDayBranch(day) {
+        return earthlyBranches[day % 12];
+    }
+
+    // 시간 천간 계산
+    function calculateHourStem(hour) {
+        return heavenlyStems[Math.floor(hour / 2) % 10];
+    }
+
+    // 시간 지지 계산
+    function calculateHourBranch(hour) {
+        return earthlyBranches[Math.floor(hour / 2) % 12];
+    }
+
+    // 오행 계산
+    function calculateFiveElement(stem) {
+        const stemIndex = heavenlyStems.indexOf(stem);
+        return fiveElements[Math.floor(stemIndex / 2)];
+    }
+
+    // 사주 계산
+    function calculateSaju(year, month, day, hour) {
+        return {
+            year: {
+                stem: calculateYearStem(year),
+                branch: calculateYearBranch(year),
+                element: calculateFiveElement(calculateYearStem(year))
+            },
+            month: {
+                stem: calculateMonthStem(year, month),
+                branch: calculateMonthBranch(month),
+                element: calculateFiveElement(calculateMonthStem(year, month))
+            },
+            day: {
+                stem: calculateDayStem(day),
+                branch: calculateDayBranch(day),
+                element: calculateFiveElement(calculateDayStem(day))
+            },
+            hour: {
+                stem: calculateHourStem(hour),
+                branch: calculateHourBranch(hour),
+                element: calculateFiveElement(calculateHourStem(hour))
+            }
+        };
+    }
+
+    // 오행 분석
+    function analyzeFiveElements(saju) {
+        const elements = {};
+        fiveElements.forEach(element => {
+            elements[element] = 0;
+        });
+
+        Object.values(saju).forEach(pillar => {
+            elements[pillar.element]++;
+        });
+
+        return elements;
+    }
+
+    // 결과 분석
+    function analyzeResult(saju, elements) {
+        const dominantElement = Object.entries(elements)
+            .sort(([,a], [,b]) => b - a)[0][0];
+
+        // 기본 정보 분석
+        let basicInfo = `당신의 사주는 ${dominantElement}이(가) 강한 형상입니다. `;
+        if (dominantElement === '木') {
+            basicInfo += '봄의 기운이 강하여 새로운 시작과 성장을 상징합니다. 목(木)은 나무를 의미하며, 봄의 생명력과 성장을 대표합니다.';
+        } else if (dominantElement === '火') {
+            basicInfo += '여름의 기운이 강하여 열정과 활력을 상징합니다. 화(火)는 불을 의미하며, 여름의 열정과 활력을 대표합니다.';
+        } else if (dominantElement === '土') {
+            basicInfo += '중앙의 기운이 강하여 안정과 중용을 상징합니다. 토(土)는 땅을 의미하며, 안정과 중용을 대표합니다.';
+        } else if (dominantElement === '金') {
+            basicInfo += '가을의 기운이 강하여 결실과 정리를 상징합니다. 금(金)은 금속을 의미하며, 가을의 결실과 정리를 대표합니다.';
+        } else if (dominantElement === '水') {
+            basicInfo += '겨울의 기운이 강하여 지혜와 유연성을 상징합니다. 수(水)는 물을 의미하며, 겨울의 지혜와 유연성을 대표합니다.';
+        }
+
+        // 성격 분석
+        let personality = '당신은 ';
+        if (dominantElement === '木') {
+            personality += '창의적이고 독립적인 성격을 가지고 있습니다. 새로운 도전을 즐기며, 타인을 돕는 것을 좋아합니다.';
+        } else if (dominantElement === '火') {
+            personality += '열정적이고 사교적인 성격을 가지고 있습니다. 리더십이 뛰어나며, 새로운 아이디어를 제시하는 것을 좋아합니다.';
+        } else if (dominantElement === '土') {
+            personality += '안정적이고 신중한 성격을 가지고 있습니다. 책임감이 강하며, 타인을 배려하는 것을 좋아합니다.';
+        } else if (dominantElement === '金') {
+            personality += '원칙적이고 완벽을 추구하는 성격을 가지고 있습니다. 정의감이 강하며, 질서를 중요시합니다.';
+        } else if (dominantElement === '水') {
+            personality += '지적이고 유연한 성격을 가지고 있습니다. 통찰력이 뛰어나며, 새로운 지식을 탐구하는 것을 좋아합니다.';
+        }
+
+        // 직업 분석
+        let career = '당신에게 적합한 직업은 ';
+        if (dominantElement === '木') {
+            career += '교육, 환경, 디자인, 예술 분야입니다. 창의성과 새로운 아이디어를 활용할 수 있는 직업이 적합합니다.';
+        } else if (dominantElement === '火') {
+            career += '리더십이 필요한 관리직, 영업, 마케팅 분야입니다. 열정과 활력을 발휘할 수 있는 직업이 적합합니다.';
+        } else if (dominantElement === '土') {
+            career += '안정적인 공무원, 행정, 서비스 분야입니다. 책임감과 신중함을 발휘할 수 있는 직업이 적합합니다.';
+        } else if (dominantElement === '金') {
+            career += '법률, 금융, 회계 분야입니다. 원칙과 규율을 중요시하는 직업이 적합합니다.';
+        } else if (dominantElement === '水') {
+            career += '연구, 분석, 컨설팅 분야입니다. 통찰력과 지적 능력을 활용할 수 있는 직업이 적합합니다.';
+        }
+
+        // 건강 분석
+        let health = '건강 관리에 있어 주의해야 할 부분은 ';
+        if (dominantElement === '木') {
+            health += '간과 담낭입니다. 스트레스 관리와 충분한 휴식이 중요합니다.';
+        } else if (dominantElement === '火') {
+            health += '심장과 소장입니다. 과로와 긴장을 피하고 적절한 운동이 필요합니다.';
+        } else if (dominantElement === '土') {
+            health += '위와 비장입니다. 규칙적인 식사와 소화기 관리가 중요합니다.';
+        } else if (dominantElement === '金') {
+            health += '폐와 대장입니다. 호흡기 관리와 면역력 강화가 필요합니다.';
+        } else if (dominantElement === '水') {
+            health += '신장과 방광입니다. 수분 섭취와 신체 순환 관리가 중요합니다.';
+        }
+
+        // 관계 분석
+        let relationships = '대인 관계에서 ';
+        if (dominantElement === '木') {
+            relationships += '창의적이고 독립적인 성격으로 인해 때때로 타인과 마찰이 있을 수 있습니다. 하지만 따뜻한 마음씨로 주변 사람들의 신뢰를 얻습니다.';
+        } else if (dominantElement === '火') {
+            relationships += '열정적이고 사교적인 성격으로 많은 사람들과 좋은 관계를 맺습니다. 다만 때로는 성급한 판단을 할 수 있습니다.';
+        } else if (dominantElement === '土') {
+            relationships += '안정적이고 신중한 성격으로 주변 사람들의 든든한 버팀목이 됩니다. 신뢰할 수 있는 친구로 인정받습니다.';
+        } else if (dominantElement === '金') {
+            relationships += '원칙적이고 완벽을 추구하는 성격으로 때로는 융통성이 부족할 수 있습니다. 하지만 믿음직한 조언자로 인정받습니다.';
+        } else if (dominantElement === '水') {
+            relationships += '지적이고 유연한 성격으로 깊이 있는 대화를 나누는 것을 좋아합니다. 때로는 감정적 거리를 두는 경향이 있습니다.';
+        }
+
+        // 연애 분석
+        let love = '연애와 결혼에 있어 ';
+        if (dominantElement === '木') {
+            love += '자유로운 연애를 추구하며, 상대방의 독립성을 존중합니다. 새로운 경험을 함께 나누는 것을 좋아합니다.';
+        } else if (dominantElement === '火') {
+            love += '열정적인 연애를 추구하며, 로맨틱한 순간을 중요시합니다. 다만 때로는 성급한 결정을 할 수 있습니다.';
+        } else if (dominantElement === '土') {
+            love += '안정적인 관계를 추구하며, 책임감 있는 파트너십을 중요시합니다. 신뢰와 배려가 바탕이 된 관계를 만듭니다.';
+        } else if (dominantElement === '金') {
+            love += '완벽한 관계를 추구하며, 원칙과 규율을 중요시합니다. 때로는 융통성이 부족할 수 있습니다.';
+        } else if (dominantElement === '水') {
+            love += '깊이 있는 정신적 교류를 추구하며, 지적 호기심을 공유하는 것을 좋아합니다. 때로는 감정적 거리를 두는 경향이 있습니다.';
+        }
+
+        // 재물 분석
+        let wealth = '재물 운에 있어 ';
+        if (dominantElement === '木') {
+            wealth += '창의적인 아이디어를 통한 수입이 많습니다. 교육이나 예술 관련 분야에서 재물을 얻을 수 있습니다.';
+        } else if (dominantElement === '火') {
+            wealth += '열정과 노력을 통한 수입이 많습니다. 리더십을 발휘하는 직업에서 재물을 얻을 수 있습니다.';
+        } else if (dominantElement === '土') {
+            wealth += '안정적인 수입이 많습니다. 부동산이나 안정적인 직업을 통한 재물 축적이 가능합니다.';
+        } else if (dominantElement === '金') {
+            wealth += '체계적인 재물 관리가 가능합니다. 금융이나 법률 관련 분야에서 재물을 얻을 수 있습니다.';
+        } else if (dominantElement === '水') {
+            wealth += '지적 능력을 통한 수입이 많습니다. 연구나 컨설팅 분야에서 재물을 얻을 수 있습니다.';
+        }
+
+        // 행운 분석
+        let luck = '행운의 시기와 방향은 ';
+        if (dominantElement === '木') {
+            luck += '봄철에 동쪽 방향이 행운을 가져옵니다. 새로운 시작과 성장의 시기입니다.';
+        } else if (dominantElement === '火') {
+            luck += '여름철에 남쪽 방향이 행운을 가져옵니다. 열정과 활력의 시기입니다.';
+        } else if (dominantElement === '土') {
+            luck += '중앙 방향이 행운을 가져옵니다. 안정과 중용의 시기입니다.';
+        } else if (dominantElement === '金') {
+            luck += '가을철에 서쪽 방향이 행운을 가져옵니다. 결실과 정리의 시기입니다.';
+        } else if (dominantElement === '水') {
+            luck += '겨울철에 북쪽 방향이 행운을 가져옵니다. 지혜와 유연성의 시기입니다.';
+        }
+
+        // 조언 분석
+        let advice = '앞으로의 삶에 대한 조언은 ';
+        if (dominantElement === '木') {
+            advice += '창의성을 더욱 발전시키되, 때로는 타인의 의견도 경청하세요. 새로운 도전을 두려워하지 마세요.';
+        } else if (dominantElement === '火') {
+            advice += '열정을 유지하되, 때로는 신중한 판단이 필요합니다. 성급한 결정을 피하세요.';
+        } else if (dominantElement === '土') {
+            advice += '안정성을 유지하되, 때로는 새로운 변화를 받아들이세요. 과도한 보수성을 피하세요.';
+        } else if (dominantElement === '金') {
+            advice += '원칙을 지키되, 때로는 융통성이 필요합니다. 완벽을 추구하되 과도하지 않게 하세요.';
+        } else if (dominantElement === '水') {
+            advice += '지적 호기심을 유지하되, 감정적 교류도 중요합니다. 때로는 마음을 열어보세요.';
+        }
+
+        return {
+            basicInfo,
+            personality,
+            career,
+            health,
+            relationships,
+            love,
+            wealth,
+            luck,
+            advice
+        };
+    }
+
     sajuForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         setLoading(true);
@@ -71,43 +310,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('연도는 1900년부터 2100년 사이여야 합니다.');
             }
 
-            // 테스트용 결과 데이터
-            const calculateResult = {
-                year: {
-                    stem: '甲',
-                    branch: '子'
-                },
-                month: {
-                    stem: '丙',
-                    branch: '寅'
-                },
-                day: {
-                    stem: '戊',
-                    branch: '辰'
-                },
-                hour: {
-                    stem: '庚',
-                    branch: '午'
-                }
-            };
-
-            const analysisResult = {
-                basicInfo: '당신의 사주는 목(木)이 강한 형상입니다. 봄의 기운이 강하여 새로운 시작과 성장을 상징합니다. 목(木)은 나무를 의미하며, 봄의 생명력과 성장을 대표합니다. 당신의 사주에서 목(木)이 강한 것은 창의성, 독립성, 성장의지가 강함을 의미합니다. 특히 봄철에 태어난 목(木)의 기운은 새로운 시작과 변화를 추구하는 성격을 형성합니다. 다만, 목(木)이 너무 강하면 완고하고 고집스러운 성격이 될 수 있으므로, 유연한 사고방식과 타인에 대한 이해가 필요합니다. 금(金)의 기운이 약한 것은 의사결정의 신중함이 필요함을 의미하며, 수(水)의 기운이 보조하는 것은 지적 호기심과 탐구심이 강함을 나타냅니다.',
-                personality: '당신은 성실하고 책임감이 강한 성격을 가지고 있습니다. 새로운 도전을 즐기며, 타인을 돕는 것을 좋아합니다. 창의적이고 독립적인 성격으로, 자신의 의견을 잘 표현하는 편입니다. 때로는 완벽을 추구하는 성격이 있어 스트레스를 받을 수 있습니다. 목(木)의 기운이 강한 당신은 원칙과 규칙을 중요시하며, 정의감이 강합니다. 다만, 때로는 너무 완고하고 고집스러울 수 있으므로, 유연한 사고방식과 타인에 대한 이해가 필요합니다. 새로운 환경에 적응하는 능력이 뛰어나며, 도전적인 상황에서도 포기하지 않고 끝까지 해내는 강인한 성격을 가지고 있습니다.',
-                career: '관리직, 교육자, 의료인, 연구원 등의 직업이 적합합니다. 특히 타인을 돕고 가르치는 일에서 큰 성취를 이룰 수 있습니다. 창의적인 분야나 환경 보호, 생태 관련 직업도 좋은 선택이 될 수 있습니다. 30대 후반부터 40대 초반에 경력 전환의 기회가 있을 수 있습니다. 목(木)의 기운이 강한 당신은 창의성과 독립성이 필요한 직업에서 성공할 가능성이 높습니다. 특히 교육, 환경, 생태, 디자인, 예술 분야에서 뛰어난 성과를 낼 수 있습니다. 다만, 금(金)의 기운이 약한 것은 의사결정의 신중함이 필요함을 의미하므로, 중요한 결정은 충분한 고민 후에 내리는 것이 좋습니다.',
-                health: '심장과 혈관 건강에 주의가 필요합니다. 규칙적인 운동과 건강한 식습관을 유지하세요. 특히 봄철에는 알레르기나 호흡기 질환에 주의가 필요합니다. 스트레스 관리가 중요하며, 명상이나 요가와 같은 정신적 안정을 위한 활동을 추천합니다. 목(木)이 강한 당신은 간과 담낭 건강에 주의가 필요합니다. 과로와 스트레스로 인한 피로가 쌓이지 않도록 적절한 휴식과 운동이 중요합니다. 특히 봄철에는 알레르기나 호흡기 질환에 취약할 수 있으므로, 면역력 강화에 신경 쓰세요. 수(水)의 기운이 보조하는 것은 신장과 방광 건강이 양호함을 의미하지만, 과도한 수분 섭취는 피해야 합니다.',
-                relationships: '가족과의 관계가 매우 중요합니다. 특히 부모님과의 관계를 소중히 여기세요. 연인과의 관계에서는 서로를 이해하고 배려하는 자세가 필요합니다. 친구 관계에서는 신중하게 선택하여 깊은 우정을 맺는 것이 좋습니다. 35세 전후에 중요한 인연을 만날 수 있습니다. 목(木)의 기운이 강한 당신은 독립적인 성격으로, 때로는 타인과의 관계에서 거리를 두는 경향이 있습니다. 하지만 가족과의 관계는 매우 중요하며, 특히 부모님과의 관계를 소중히 여겨야 합니다. 친구 관계에서는 신중하게 선택하여 깊은 우정을 맺는 것이 좋으며, 35세 전후에 중요한 인연을 만날 수 있습니다.',
-                love: '연애와 결혼에 있어서는 신중한 선택이 필요합니다. 28-30세 사이에 좋은 인연을 만날 수 있으며, 32-34세에 결혼의 기회가 있습니다. 파트너와의 소통이 중요하며, 서로의 개성을 존중하는 관계를 만들어야 합니다. 결혼 후에는 가정의 안정이 중요합니다. 목(木)의 기운이 강한 당신은 독립적인 성격으로, 연애와 결혼에 있어서도 신중한 선택이 필요합니다. 28-30세 사이에 좋은 인연을 만날 수 있으며, 32-34세에 결혼의 기회가 있습니다. 파트너와의 소통이 중요하며, 서로의 개성을 존중하는 관계를 만들어야 합니다. 결혼 후에는 가정의 안정이 중요하며, 특히 자녀와의 관계에서 많은 기쁨을 얻을 수 있습니다. 다만, 때로는 완고한 성격으로 인해 갈등이 생길 수 있으므로, 유연한 사고방식과 타인에 대한 이해가 필요합니다.',
-                wealth: '재물운은 안정적으로 형성됩니다. 30대 중반부터 본격적인 재물 축적이 시작되며, 40대에 큰 기회가 있을 수 있습니다. 부동산이나 환경 관련 투자가 유리할 수 있습니다. 다만, 과도한 투기나 위험한 투자는 피해야 합니다. 저축과 투자의 균형이 중요합니다. 목(木)의 기운이 강한 당신은 창의성과 독립성이 필요한 분야에서 재물을 얻을 수 있습니다. 30대 중반부터 본격적인 재물 축적이 시작되며, 40대에 큰 기회가 있을 수 있습니다. 부동산이나 환경 관련 투자가 유리할 수 있으며, 특히 친환경 제품이나 생태 관련 사업에서 성공할 가능성이 높습니다. 다만, 금(金)의 기운이 약한 것은 의사결정의 신중함이 필요함을 의미하므로, 과도한 투기나 위험한 투자는 피해야 합니다. 저축과 투자의 균형이 중요하며, 특히 40대 후반에는 큰 재물의 기회가 있을 수 있으므로, 그때를 대비한 준비가 필요합니다.',
-                luck: '길운은 동쪽과 남쪽 방향에 있습니다. 봄과 여름에 행운이 따르며, 특히 3월과 7월에 좋은 기회가 있을 수 있습니다. 행운의 색상은 초록색과 빨간색입니다. 숫자 3과 7이 길한 숫자입니다. 중요한 결정은 오전 9시에서 11시 사이에 하는 것이 좋습니다. 목(木)의 기운이 강한 당신은 동쪽과 남쪽 방향이 길운입니다. 봄과 여름에 행운이 따르며, 특히 3월과 7월에 좋은 기회가 있을 수 있습니다. 행운의 색상은 초록색과 빨간색이며, 이 색상을 활용한 의상이나 소품이 도움이 될 수 있습니다. 숫자 3과 7이 길한 숫자이며, 중요한 결정은 오전 9시에서 11시 사이에 하는 것이 좋습니다. 다만, 금(金)의 기운이 약한 것은 의사결정의 신중함이 필요함을 의미하므로, 중요한 결정은 충분한 고민 후에 내리는 것이 좋습니다. 수(水)의 기운이 보조하는 것은 지적 호기심과 탐구심이 강함을 의미하며, 이를 활용한 학습과 자기계발이 행운을 가져올 수 있습니다.',
-                advice: '1. 새로운 시작은 봄에 하는 것이 좋습니다.\n2. 중요한 결정은 충분한 고민 후에 하세요.\n3. 타인과의 관계에서 너무 완벽을 추구하지 마세요.\n4. 건강 관리에 특히 신경 쓰세요.\n5. 재물은 안정적으로 관리하세요.\n6. 독립적인 성격을 유지하되, 타인과의 소통도 중요합니다.\n7. 창의성과 독립성을 활용한 직업 선택이 좋습니다.\n8. 가족과의 관계를 소중히 여기세요.\n9. 스트레스 관리와 건강 관리에 신경 쓰세요.\n10. 중요한 결정은 오전 9시에서 11시 사이에 하세요.'
-            };
+            // 사주 계산
+            const saju = calculateSaju(year, month, day, hour);
+            const elements = analyzeFiveElements(saju);
+            const analysisResult = analyzeResult(saju, elements);
 
             // 결과 표시
-            displayResults(calculateResult, analysisResult);
+            displayResults(saju, analysisResult);
             resultSection.style.display = 'block';
-            
-            // 결과 섹션으로 스크롤
             resultSection.scrollIntoView({ behavior: 'smooth' });
 
             // 기본 정보 표시
