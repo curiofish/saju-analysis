@@ -777,6 +777,106 @@ document.addEventListener('DOMContentLoaded', function() {
         return foundConflicts;
     }
 
+    // 기본 정보 생성 함수들
+    function generateBasicInfo(dominantElement) {
+        const elementNames = {
+            '木': '목(木)',
+            '火': '화(火)',
+            '土': '토(土)',
+            '金': '금(金)',
+            '水': '수(水)'
+        };
+        return `당신의 사주는 ${elementNames[dominantElement]}가 강한 형상입니다.`;
+    }
+
+    function generatePersonality(dominantElement) {
+        const personalities = {
+            '木': '창의적이고 독립적인 성격으로, 새로운 아이디어를 제시하는 것을 좋아합니다.',
+            '火': '열정적이고 적극적인 성격으로, 리더십이 뛰어납니다.',
+            '土': '안정적이고 신중한 성격으로, 책임감이 강합니다.',
+            '金': '정직하고 원칙적인 성격으로, 완벽을 추구합니다.',
+            '水': '지적이고 통찰력 있는 성격으로, 깊이 있는 사고를 합니다.'
+        };
+        return personalities[dominantElement];
+    }
+
+    function generateCareer(dominantElement) {
+        const careers = {
+            '木': '예술, 디자인, 교육, 창의적 분야',
+            '火': '경영, 영업, 마케팅, 리더십 분야',
+            '土': '행정, 서비스, 관리, 안정적 분야',
+            '金': '법률, 금융, 회계, 규율 분야',
+            '水': '연구, 분석, 컨설팅, 지적 분야'
+        };
+        return careers[dominantElement];
+    }
+
+    function generateHealth(dominantElement) {
+        const health = {
+            '木': '간, 담낭, 근육, 관절',
+            '火': '심장, 소장, 혈액순환',
+            '土': '위, 비장, 소화기관',
+            '金': '폐, 대장, 호흡기관',
+            '水': '신장, 방광, 내분비계'
+        };
+        return health[dominantElement];
+    }
+
+    function generateRelationships(dominantElement) {
+        const relationships = {
+            '木': '독립적이고 창의적인 관계를 추구합니다.',
+            '火': '열정적이고 적극적인 관계를 추구합니다.',
+            '土': '안정적이고 신뢰감 있는 관계를 추구합니다.',
+            '金': '정직하고 원칙적인 관계를 추구합니다.',
+            '水': '지적이고 깊이 있는 관계를 추구합니다.'
+        };
+        return relationships[dominantElement];
+    }
+
+    function generateLove(dominantElement) {
+        const love = {
+            '木': '자유롭고 창의적인 연애를 추구합니다.',
+            '火': '열정적이고 적극적인 연애를 추구합니다.',
+            '土': '안정적이고 신뢰감 있는 연애를 추구합니다.',
+            '金': '정직하고 원칙적인 연애를 추구합니다.',
+            '水': '지적이고 깊이 있는 연애를 추구합니다.'
+        };
+        return love[dominantElement];
+    }
+
+    function generateWealth(dominantElement) {
+        const wealth = {
+            '木': '창의적인 방법으로 재물을 얻습니다.',
+            '火': '열정적인 노력으로 재물을 얻습니다.',
+            '土': '안정적인 방법으로 재물을 얻습니다.',
+            '金': '체계적인 방법으로 재물을 얻습니다.',
+            '水': '지적 능력으로 재물을 얻습니다.'
+        };
+        return wealth[dominantElement];
+    }
+
+    function generateLuck(dominantElement) {
+        const luck = {
+            '木': '창의적인 기회가 찾아옵니다.',
+            '火': '열정적인 기회가 찾아옵니다.',
+            '土': '안정적인 기회가 찾아옵니다.',
+            '金': '체계적인 기회가 찾아옵니다.',
+            '水': '지적 기회가 찾아옵니다.'
+        };
+        return luck[dominantElement];
+    }
+
+    function generateAdvice(dominantElement) {
+        const advice = {
+            '木': '창의성을 더욱 발전시키고, 안정성도 함께 추구하세요.',
+            '火': '열정을 조절하고, 신중함도 함께 가지세요.',
+            '土': '안정성을 유지하면서도 새로운 도전을 시도하세요.',
+            '金': '원칙을 지키되, 유연한 사고도 함께 하세요.',
+            '水': '지적 탐구를 하되, 실천적인 면도 고려하세요.'
+        };
+        return advice[dominantElement];
+    }
+
     // 결과 분석
     function analyzeResult(saju, elements) {
         const dominantElement = Object.entries(elements)
@@ -888,6 +988,18 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 천예 표시
             document.getElementById('heavenlyArt').textContent = `${name}님의 천예는 상관(傷官)의 특별한 작용에서 찾을 수 있습니다. 상관이 강하게 작용하여 창의적인 예술 재능이 두드러지는 형상입니다. 특히 화(火)와 수(水) 오행이 조화롭게 배치되어 있어 예술적 감성이 풍부하며, 음악이나 미술 같은 예술 분야에서 뛰어난 성과를 낼 수 있는 구조입니다. 이는 단순한 기술적 능력이 아닌, 창의적인 표현과 혁신적인 아이디어를 가능하게 합니다. 25-30세 사이에 예술적 재능이 본격적으로 발현될 것으로 보이며, 특히 디자인이나 미디어 아트 분야에서 성공할 가능성이 높습니다. 상관과 정인의 조화는 예술적 통찰력과 표현력을 더욱 강화시킬 것으로 예상됩니다.`;
+
+            // 천간충 분석 결과
+            const stemConflictElement = document.getElementById('heavenlyStemConflict');
+            if (stemConflictElement) {
+                stemConflictElement.textContent = generateStemConflictAnalysis(analysisResult.stemConflict);
+            }
+
+            // 사상의학 체질 분석 결과
+            const sasangElement = document.getElementById('sasangConstitution');
+            if (sasangElement) {
+                sasangElement.textContent = generateSasangAnalysis(dominantElement);
+            }
         } catch (error) {
             alert(error.message);
         } finally {
@@ -1159,5 +1271,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return `당신의 천간충은 다음과 같습니다:
         ${conflicts.map(conflict => `${conflict.stems}: ${conflict.type}`).join('\n')}`;
+    }
+
+    // 사상의학 체질 분석 결과 생성
+    function generateSasangAnalysis(dominantElement) {
+        const sasangPatterns = {
+            '木': '태양인(太陽人) 체질입니다. 목(木)의 기운이 강한 태양인은 창의적이고 독립적인 성격을 가지고 있습니다. 체력이 좋고 활동적인 편이며, 새로운 도전을 즐기는 성향이 있습니다. 건강관리 측면에서는 간과 담낭을 주의해야 하며, 스트레스 관리가 중요합니다.',
+            '火': '소양인(少陽人) 체질입니다. 화(火)의 기운이 강한 소양인은 열정적이고 적극적인 성격을 가지고 있습니다. 리더십이 뛰어나고 의사결정이 빠른 편입니다. 건강관리 측면에서는 심장과 소장을 주의해야 하며, 과로를 피하는 것이 중요합니다.',
+            '土': '태음인(太陰人) 체질입니다. 토(土)의 기운이 강한 태음인은 안정적이고 신중한 성격을 가지고 있습니다. 책임감이 강하고 신뢰감 있는 편입니다. 건강관리 측면에서는 위와 비장을 주의해야 하며, 규칙적인 식사가 중요합니다.',
+            '金': '소음인(少陰人) 체질입니다. 금(金)의 기운이 강한 소음인은 정직하고 원칙적인 성격을 가지고 있습니다. 완벽을 추구하고 체계적인 것을 좋아합니다. 건강관리 측면에서는 폐와 대장을 주의해야 하며, 호흡기 건강관리가 중요합니다.',
+            '水': '평화인(平和人) 체질입니다. 수(水)의 기운이 강한 평화인은 지적이고 통찰력 있는 성격을 가지고 있습니다. 깊이 있는 사고를 하며 조화를 추구합니다. 건강관리 측면에서는 신장과 방광을 주의해야 하며, 수분 섭취가 중요합니다.'
+        };
+        return sasangPatterns[dominantElement];
     }
 }); 
