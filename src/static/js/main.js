@@ -8,13 +8,20 @@ document.addEventListener('DOMContentLoaded', function() {
         return date.getDate() === day && date.getMonth() === month - 1;
     }
 
-    sajuForm.addEventListener('submit', async function(e) {
+    sajuForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
+        // 입력값 가져오기
         const year = parseInt(document.getElementById('birthYear').value);
         const month = parseInt(document.getElementById('birthMonth').value);
         const day = parseInt(document.getElementById('birthDay').value);
         const hour = parseInt(document.getElementById('birthHour').value);
+
+        // 입력값 검증
+        if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hour)) {
+            alert('모든 필드를 입력해주세요.');
+            return;
+        }
 
         // 날짜 유효성 검사
         if (!validateDate(year, month, day)) {
