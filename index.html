@@ -19,19 +19,22 @@
                 <form id="sajuForm">
                     <div class="form-group">
                         <label for="name">이름</label>
-                        <input type="text" id="name" name="name" required>
+                        <input type="text" id="name" name="name" required placeholder="홍길동">
                     </div>
                     <div class="form-group">
                         <label for="birthYear">생년</label>
                         <input type="number" id="birthYear" name="birthYear" min="1900" max="2100" required placeholder="예: 1990">
+                        <small class="input-help">1900년부터 2100년까지 입력 가능</small>
                     </div>
                     <div class="form-group">
                         <label for="birthMonth">생월</label>
                         <input type="number" id="birthMonth" name="birthMonth" min="1" max="12" required placeholder="예: 3">
+                        <small class="input-help">1부터 12까지 입력 가능</small>
                     </div>
                     <div class="form-group">
                         <label for="birthDay">생일</label>
                         <input type="number" id="birthDay" name="birthDay" min="1" max="31" required placeholder="예: 15">
+                        <small class="input-help">1부터 31까지 입력 가능</small>
                     </div>
                     <div class="form-group">
                         <label for="birthHour">생시</label>
