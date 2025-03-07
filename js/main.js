@@ -1603,22 +1603,24 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         chartSection.innerHTML = `
             <h3>사주 차트</h3>
             <div class="analysis-content">
-                <div class="analysis-group">
-                    <table class="saju-chart">
+                <table class="saju-chart">
+                    <thead>
                         <tr>
                             <th>시주</th>
                             <th>일주</th>
                             <th>월주</th>
                             <th>년주</th>
                         </tr>
+                    </thead>
+                    <tbody>
                         <tr>
                             <td>${result.hour?.stem || ''}${result.hour?.branch || ''}</td>
                             <td>${result.day?.stem || ''}${result.day?.branch || ''}</td>
                             <td>${result.month?.stem || ''}${result.month?.branch || ''}</td>
                             <td>${result.year?.stem || ''}${result.year?.branch || ''}</td>
                         </tr>
-                    </table>
-                </div>
+                    </tbody>
+                </table>
             </div>
         `;
 
@@ -1628,14 +1630,20 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         elementalSection.innerHTML = `
             <h3>오행 분석</h3>
             <div class="analysis-content">
-                ${Object.entries(result.elements || {}).map(([element, value]) => `
-                    <div class="analysis-group element-${getElementClass(element)}">
-                        <h4>${getElementEmoji(element)} ${element}의 기운 (${Math.round(value * 100)}%)</h4>
-                        <div class="progress-bar">
-                            <div class="progress" style="width: ${value * 100}%"></div>
+                <div class="element-analysis">
+                    ${Object.entries(result.elements || {}).map(([element, value]) => `
+                        <div class="element-group element-${getElementClass(element)}">
+                            <div class="element-title">
+                                <span class="element-emoji">${getElementEmoji(element)}</span>
+                                <h4>${element}의 기운</h4>
+                                <span class="element-value">${Math.round(value * 100)}%</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: ${value * 100}%"></div>
+                            </div>
                         </div>
-                    </div>
-                `).join('')}
+                    `).join('')}
+                </div>
             </div>
         `;
 

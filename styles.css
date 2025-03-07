@@ -160,33 +160,122 @@
     }
 }
 
+/* 사주 차트 스타일 */
 .saju-chart {
     width: 100%;
-    border-collapse: collapse;
-    margin: 1rem 0;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-collapse: separate;
+    border-spacing: 8px;
+    margin: 20px 0;
+    background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
 }
 
 .saju-chart th, .saju-chart td {
-    padding: 1rem;
+    padding: 15px;
     text-align: center;
-    border: 1px solid #ddd;
+    border-radius: 10px;
+    transition: all 0.3s ease;
 }
 
 .saju-chart th {
-    background-color: #f8f9fa;
-    font-weight: bold;
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.9em;
+    text-transform: uppercase;
 }
 
 .saju-chart td {
-    font-size: 1.2rem;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    font-size: 1.2em;
+    font-weight: 500;
+    color: #2c3e50;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
 }
 
-@media (max-width: 768px) {
-    .saju-chart th, .saju-chart td {
-        padding: 0.5rem;
-        font-size: 0.9rem;
+.saju-chart tr:hover td {
+    transform: translateY(-2px);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    background: linear-gradient(145deg, #ffffff, #f1f3f5);
+}
+
+/* 오행 분석 스타일 개선 */
+.element-analysis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 10px;
+}
+
+.element-group {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.element-group:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.element-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.element-emoji {
+    font-size: 1.5em;
+}
+
+.progress-container {
+    background: rgba(0,0,0,0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    height: 8px;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+}
+
+/* 오행별 프로그레스 바 색상 */
+.element-wood .progress-bar { background: linear-gradient(90deg, #76c893, #52b69a); }
+.element-fire .progress-bar { background: linear-gradient(90deg, #ff7b7b, #ff4d4d); }
+.element-earth .progress-bar { background: linear-gradient(90deg, #deb887, #d4a276); }
+.element-metal .progress-bar { background: linear-gradient(90deg, #b8b8b8, #a5a5a5); }
+.element-water .progress-bar { background: linear-gradient(90deg, #48cae4, #00b4d8); }
+
+/* 다크모드 대응 */
+@media (prefers-color-scheme: dark) {
+    .saju-chart {
+        background: linear-gradient(145deg, rgba(40,44,52,0.9), rgba(30,33,39,0.7));
+    }
+
+    .saju-chart th {
+        background: linear-gradient(145deg, #2c3e50, #2c3e50);
+        color: #e9ecef;
+    }
+
+    .saju-chart td {
+        background: linear-gradient(145deg, #343a40, #2c3e50);
+        color: #f8f9fa;
+    }
+
+    .element-group {
+        background: linear-gradient(145deg, #343a40, #2c3e50);
+    }
+
+    .progress-container {
+        background: rgba(255,255,255,0.1);
     }
 }
 
@@ -417,98 +506,5 @@ header h2 {
 
     .usage-guide li {
         font-size: 0.95rem;
-    }
-}
-
-/* 푸터 스타일 */
-footer {
-    text-align: center;
-    padding: 2rem 1rem;
-    margin-top: 3rem;
-    border-top: 1px solid #eee;
-}
-
-footer p {
-    color: #666;
-    margin: 0.5rem 0;
-}
-
-footer a {
-    color: #3498db;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-footer a:hover {
-    color: #2980b9;
-    text-decoration: underline;
-}
-
-.disclaimer {
-    font-size: 0.9rem;
-    color: #999;
-}
-
-/* 다크 모드에서의 푸터 스타일 */
-@media (prefers-color-scheme: dark) {
-    footer {
-        border-top-color: #2c3e50;
-    }
-
-    footer p {
-        color: #95a5a6;
-    }
-
-    footer a {
-        color: #5dade2;
-    }
-
-    footer a:hover {
-        color: #3498db;
-    }
-
-    .disclaimer {
-        color: #7f8c8d;
-    }
-}
-
-/* 다시 해 보기 버튼 스타일 */
-.retry-section {
-    text-align: center;
-    margin: 3rem 0;
-    padding-top: 2rem;
-    border-top: 1px solid #eee;
-}
-
-.retry-button {
-    background: linear-gradient(135deg, #3498db, #2980b9);
-    color: white;
-    border: none;
-    padding: 1rem 2.5rem;
-    font-size: 1.1rem;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.retry-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-}
-
-.retry-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* 다크 모드 */
-@media (prefers-color-scheme: dark) {
-    .retry-section {
-        border-top-color: #2c3e50;
-    }
-
-    .retry-button {
-        background: linear-gradient(135deg, #2980b9, #2c3e50);
     }
 } 
