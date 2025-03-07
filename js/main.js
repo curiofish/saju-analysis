@@ -117,31 +117,24 @@ document.addEventListener('DOMContentLoaded', async function() {
     // 월 천간 계산
     function calculateMonthStem(year, month) {
         // 월 천간은 년도의 천간에 따라 시작점이 달라짐
-        const yearStemIndex = (year - 4) % 10;
-        const monthOffset = (yearStemIndex % 5) * 2;
-        const stemIndex = (monthOffset + month - 1) % 10;
-        return heavenlyStems[stemIndex >= 0 ? stemIndex : stemIndex + 10];
+        const yearStem = calculateYearStem(year);
+        const yearStemIndex = heavenlyStems.indexOf(yearStem);
+        
+        // 각 년도의 천간에 따른 월 천간의 시작점 계산
+        const monthStemStartIndex = (yearStemIndex % 5) * 2;
+        
+        // 월 천간 계산
+        let monthStemIndex = (monthStemStartIndex + (month - 1)) % 10;
+        if (monthStemIndex < 0) monthStemIndex += 10;
+        
+        return heavenlyStems[monthStemIndex];
     }
 
     // 월 지지 계산
     function calculateMonthBranch(month) {
-        // 월 지지는 고정된 순서를 가짐
-        // 1월은 寅(3)부터 시작
-        const monthToIndex = {
-            1: 2,  // 寅
-            2: 3,  // 卯
-            3: 4,  // 辰
-            4: 5,  // 巳
-            5: 6,  // 午
-            6: 7,  // 未
-            7: 8,  // 申
-            8: 9,  // 酉
-            9: 10, // 戌
-            10: 11,// 亥
-            11: 0, // 子
-            12: 1  // 丑
-        };
-        return earthlyBranches[monthToIndex[month]];
+        // 월 지지는 고정된 순서를 가짐 (정월이 寅月부터 시작)
+        const monthBranchIndex = (month + 1) % 12; // 정월(1월)이 寅(3)이 되도록 조정
+        return earthlyBranches[monthBranchIndex === 0 ? 11 : monthBranchIndex - 1];
     }
 
     // 일 천간 계산 (정확한 버전)
@@ -186,43 +179,46 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // 시간 천간 계산
     function calculateHourStem(hour) {
-        // 시간 천간은 12개의 시간대로 나누어짐
-        // 각 시간대는 2시간씩
-        const timeMap = {
-            23: 0, 0: 0,     // 23:00~01:00 子
-            1: 1, 2: 1,      // 01:00~03:00 丑
-            3: 2, 4: 2,      // 03:00~05:00 寅
-            5: 3, 6: 3,      // 05:00~07:00 卯
-            7: 4, 8: 4,      // 07:00~09:00 辰
-            9: 5, 10: 5,     // 09:00~11:00 巳
-            11: 6, 12: 6,    // 11:00~13:00 午
-            13: 7, 14: 7,    // 13:00~15:00 未
-            15: 8, 16: 8,    // 15:00~17:00 申
-            17: 9, 18: 9,    // 17:00~19:00 酉
-            19: 0, 20: 0,    // 19:00~21:00 戌
-            21: 1, 22: 1     // 21:00~23:00 亥
+        // 시간 천간은 일간(日干)에 따라 시작점이 달라져야 함
+        // 여기서는 기본적인 갑(甲)일을 기준으로 계산
+        const hourBlocks = {
+            '23': 0, '0': 0,     // 23:00~01:00 자시
+            '1': 1, '2': 1,      // 01:00~03:00 축시
+            '3': 2, '4': 2,      // 03:00~05:00 인시
+            '5': 3, '6': 3,      // 05:00~07:00 묘시
+            '7': 4, '8': 4,      // 07:00~09:00 진시
+            '9': 5, '10': 5,     // 09:00~11:00 사시
+            '11': 6, '12': 6,    // 11:00~13:00 오시
+            '13': 7, '14': 7,    // 13:00~15:00 미시
+            '15': 8, '16': 8,    // 15:00~17:00 신시
+            '17': 9, '18': 9,    // 17:00~19:00 유시
+            '19': 10, '20': 10,  // 19:00~21:00 술시
+            '21': 11, '22': 11   // 21:00~23:00 해시
         };
-        return heavenlyStems[timeMap[hour]];
+
+        const hourBlock = hourBlocks[hour.toString()];
+        return heavenlyStems[hourBlock % 10];
     }
 
     // 시간 지지 계산
     function calculateHourBranch(hour) {
-        // 시간 지지는 12개의 시간대로 나누어짐
-        const timeMap = {
-            23: 0, 0: 0,     // 23:00~01:00 子
-            1: 1, 2: 1,      // 01:00~03:00 丑
-            3: 2, 4: 2,      // 03:00~05:00 寅
-            5: 3, 6: 3,      // 05:00~07:00 卯
-            7: 4, 8: 4,      // 07:00~09:00 辰
-            9: 5, 10: 5,     // 09:00~11:00 巳
-            11: 6, 12: 6,    // 11:00~13:00 午
-            13: 7, 14: 7,    // 13:00~15:00 未
-            15: 8, 16: 8,    // 15:00~17:00 申
-            17: 9, 18: 9,    // 17:00~19:00 酉
-            19: 10, 20: 10,  // 19:00~21:00 戌
-            21: 11, 22: 11   // 21:00~23:00 亥
+        // 시간 지지는 12개의 시간대로 정확히 나누어짐
+        const hourBlocks = {
+            '23': 0, '0': 0,     // 23:00~01:00 자시 (子)
+            '1': 1, '2': 1,      // 01:00~03:00 축시 (丑)
+            '3': 2, '4': 2,      // 03:00~05:00 인시 (寅)
+            '5': 3, '6': 3,      // 05:00~07:00 묘시 (卯)
+            '7': 4, '8': 4,      // 07:00~09:00 진시 (辰)
+            '9': 5, '10': 5,     // 09:00~11:00 사시 (巳)
+            '11': 6, '12': 6,    // 11:00~13:00 오시 (午)
+            '13': 7, '14': 7,    // 13:00~15:00 미시 (未)
+            '15': 8, '16': 8,    // 15:00~17:00 신시 (申)
+            '17': 9, '18': 9,    // 17:00~19:00 유시 (酉)
+            '19': 10, '20': 10,  // 19:00~21:00 술시 (戌)
+            '21': 11, '22': 11   // 21:00~23:00 해시 (亥)
         };
-        return earthlyBranches[timeMap[hour]];
+
+        return earthlyBranches[hourBlocks[hour.toString()]];
     }
 
     // 오행 계산
@@ -1608,10 +1604,19 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         const pillars = ['year', 'month', 'day', 'hour'];
         pillars.forEach(pillar => {
             if (result[pillar]) {
-            const pillarElement = document.querySelector(`.${pillar}-pillar`);
-            if (pillarElement) {
-                    pillarElement.querySelector('.heavenly-stem').textContent = result[pillar].stem || '';
-                    pillarElement.querySelector('.earthly-branch').textContent = result[pillar].branch || '';
+                const pillarElement = document.querySelector(`.${pillar}-pillar`);
+                if (pillarElement) {
+                    const stemElement = pillarElement.querySelector('.heavenly-stem');
+                    const branchElement = pillarElement.querySelector('.earthly-branch');
+                    
+                    if (stemElement) {
+                        stemElement.textContent = result[pillar].stem || '';
+                        stemElement.style.display = 'block';
+                    }
+                    if (branchElement) {
+                        branchElement.textContent = result[pillar].branch || '';
+                        branchElement.style.display = 'block';
+                    }
                 }
             }
         });
