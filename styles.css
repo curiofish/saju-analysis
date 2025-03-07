@@ -391,11 +391,6 @@ header h2 {
     border-bottom: 2px solid rgba(52, 152, 219, 0.1);
 }
 
-.usage-guide h3::before {
-    content: '📝';
-    font-size: 1.6rem;
-}
-
 .usage-guide ol {
     margin: 0;
     padding-left: 2rem;
@@ -620,59 +615,99 @@ header h2 {
 
 /* 분석 내용 스타일 */
 .analysis-detail {
-    margin: 20px 0;
-    padding: 20px;
-    border-radius: 10px;
-    background: #ffffff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .analysis-detail dt {
-    font-weight: 600;
-    color: #1a202c;
-    margin-bottom: 8px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.8rem;
     font-size: 1.1rem;
-    letter-spacing: -0.02em;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.analysis-detail dt:first-child {
+    margin-top: 0;
+}
+
+.analysis-detail dt::before {
+    content: '•';
+    color: #3498db;
+    margin-right: 0.5rem;
+    font-size: 1.2em;
 }
 
 .analysis-detail dd {
-    margin: 0 0 20px 0;
-    color: #4a5568;
+    color: #34495e;
     line-height: 1.6;
-    font-size: 1rem;
+    margin-left: 1.2rem;
+    margin-bottom: 1rem;
+    position: relative;
 }
 
 .analysis-detail dd:last-child {
     margin-bottom: 0;
 }
 
-/* 다크모드 대응 */
 @media (prefers-color-scheme: dark) {
     .analysis-detail {
-        background: #2d3748;
+        background-color: rgba(255, 255, 255, 0.03);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     }
 
     .analysis-detail dt {
-        color: #e2e8f0;
+        color: #ecf0f1;
+        border-bottom-color: #3498db;
     }
 
     .analysis-detail dd {
-        color: #a0aec0;
+        color: #bdc3c7;
     }
 }
 
-/* 반응형 디자인 */
+.result-section h3 {
+    color: #2c3e50;
+    font-size: 1.3rem;
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #3498db;
+    position: relative;
+}
+
+.result-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background-color: #e74c3c;
+}
+
+@media (prefers-color-scheme: dark) {
+    .result-section h3 {
+        color: #ecf0f1;
+    }
+}
+
 @media (max-width: 768px) {
     .analysis-detail {
-        padding: 16px;
-        margin: 16px 0;
+        padding: 1rem;
     }
 
     .analysis-detail dt {
         font-size: 1rem;
     }
 
-    .analysis-detail dd {
-        font-size: 0.95rem;
+    .result-section h3 {
+        font-size: 1.2rem;
     }
 } 

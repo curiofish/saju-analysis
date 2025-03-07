@@ -123,7 +123,21 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // 월 지지 계산
     function calculateMonthBranch(month) {
-        return earthlyBranches[(month + 1) % 12];
+        const monthToIndex = {
+            1: 2,  // 寅
+            2: 3,  // 卯
+            3: 4,  // 辰
+            4: 5,  // 巳
+            5: 6,  // 午
+            6: 7,  // 未
+            7: 8,  // 申
+            8: 9,  // 酉
+            9: 10, // 戌
+            10: 11,// 亥
+            11: 0, // 子
+            12: 1  // 丑
+        };
+        return earthlyBranches[monthToIndex[month]];
     }
 
     // 일 천간 계산 (정확한 버전)
