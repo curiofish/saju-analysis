@@ -1551,11 +1551,10 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
     function generateBasicInfoContent(result) {
         let content = '';
         
-        // 대인 관계
+        // 대인 관계 분석
         if (result.relationships) {
             const relationships = result.relationships;
             if (typeof relationships === 'string') {
-                // 문자열인 경우 파싱
                 const tendencyMatch = relationships.match(/^(.*?)(?=강점:|$)/);
                 const strengthMatch = relationships.match(/강점: (.*?)(?=도전 과제:|$)/);
                 const challengeMatch = relationships.match(/도전 과제: (.*?)(?=조언:|$)/);
@@ -1582,27 +1581,26 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
                     `;
                 }
             } else if (typeof relationships === 'object') {
-                // 객체인 경우 직접 접근
                 if (relationships.tendency || relationships.characteristics || 
                     relationships.strengths || relationships.challenges || relationships.advice) {
                     content += `
                         <div class="analysis-detail">
-                            <dt>대인 관계 분석</dt>
+                            <dt>대인 관계의 기본 성향</dt>
                             ${relationships.tendency ? `<dd>${relationships.tendency}</dd>` : ''}
                             ${relationships.characteristics ? `
                                 <dt>관계 성향의 특징</dt>
                                 <dd>${relationships.characteristics}</dd>
                             ` : ''}
                             ${relationships.strengths ? `
-                                <dt>관계에서의 강점</dt>
+                                <dt>대인 관계에서의 장점</dt>
                                 <dd>${relationships.strengths}</dd>
                             ` : ''}
                             ${relationships.challenges ? `
-                                <dt>관계에서의 도전 과제</dt>
+                                <dt>극복해야 할 관계적 과제</dt>
                                 <dd>${relationships.challenges}</dd>
                             ` : ''}
                             ${relationships.advice ? `
-                                <dt>관계 개선을 위한 조언</dt>
+                                <dt>관계 개선을 위한 구체적 조언</dt>
                                 <dd>${relationships.advice}</dd>
                             ` : ''}
                         </div>
@@ -1610,8 +1608,8 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
                 }
             }
         }
-        
-        // 성격 특성
+
+        // 성격 특성 분석
         if (result.personality) {
             const personality = result.personality;
             if (typeof personality === 'string') {
@@ -1622,44 +1620,109 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
 
                 if (coreMatch || strengthMatch || weaknessMatch || adviceMatch) {
                     content += `
-        // 관계 성향
-        if (result.relationships && result.relationships.characteristics) {
+                        <div class="analysis-detail">
+                            <dt>성격 특성 분석</dt>
+                            ${coreMatch ? `<dd>${coreMatch[1].trim()}</dd>` : ''}
+                            ${strengthMatch ? `
+                                <dt>성격의 강점</dt>
+                                <dd>${strengthMatch[1].trim()}</dd>
+                            ` : ''}
+                            ${weaknessMatch ? `
+                                <dt>보완이 필요한 부분</dt>
+                                <dd>${weaknessMatch[1].trim()}</dd>
+                            ` : ''}
+                            ${adviceMatch ? `
+                                <dt>성격 발전을 위한 조언</dt>
+                                <dd>${adviceMatch[1].trim()}</dd>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // 건강 분석
+        if (result.health || (result.longevity && result.longevity.healthAdvice)) {
             content += `
                 <div class="analysis-detail">
-                    <dt>관계 성향</dt>
-                    <dd>${result.relationships.characteristics}</dd>
+                    <dt>건강 분석</dt>
+                    ${result.health ? `<dd>${result.health}</dd>` : ''}
+                    ${result.longevity?.healthPattern?.organs ? `
+                        <dt>주의해야 할 신체 부위</dt>
+                        <dd>${result.longevity.healthPattern.organs.join(', ')}</dd>
+                    ` : ''}
+                    ${result.longevity?.healthAdvice ? `
+                        <dt>건강 관리 조언</dt>
+                        <dd>${result.longevity.healthAdvice}</dd>
+                    ` : ''}
                 </div>
             `;
         }
-        
-        // 강점
-        if (result.strengths) {
+
+        // 재물운 분석
+        if (result.wealth || result.fortune) {
             content += `
                 <div class="analysis-detail">
-                    <dt>강점</dt>
-                    <dd>${result.strengths}</dd>
+                    <dt>재물운 분석</dt>
+                    ${result.wealth ? `<dd>${result.wealth}</dd>` : ''}
+                    ${result.fortune?.type ? `
+                        <dt>재물의 성질</dt>
+                        <dd>${result.fortune.type}</dd>
+                    ` : ''}
+                    ${result.timing?.majorTiming ? `
+                        <dt>재물운의 최적기</dt>
+                        <dd>${result.timing.majorTiming}</dd>
+                    ` : ''}
+                    ${result.timing?.minorTiming ? `
+                        <dt>세부 시기</dt>
+                        <dd>${result.timing.minorTiming}</dd>
+                    ` : ''}
                 </div>
             `;
         }
-        
-        // 도전 과제
-        if (result.challenges) {
+
+        // 운세와 조언
+        if (result.luck || result.advice) {
             content += `
                 <div class="analysis-detail">
-                    <dt>도전 과제</dt>
-                    <dd>${result.challenges}</dd>
+                    <dt>종합 운세 분석</dt>
+                    ${result.luck ? `<dd>${result.luck}</dd>` : ''}
+                    ${result.advice ? `
+                        <dt>전반적인 조언</dt>
+                        <dd>${result.advice}</dd>
+                    ` : ''}
                 </div>
             `;
         }
-        
-        // 조언
-        if (result.advice) {
-            content += `
-                <div class="analysis-detail">
-                    <dt>조언</dt>
-                    <dd>${result.advice}</dd>
-                </div>
-            `;
+
+        // 직업 적성
+        if (result.career) {
+            const career = result.career;
+            if (typeof career === 'string') {
+                const fieldMatch = career.match(/적합한 직업군: (.*?)(?=강점:|$)/);
+                const strengthMatch = career.match(/강점: (.*?)(?=조언:|$)/);
+                const adviceMatch = career.match(/조언: (.*?)$/);
+
+                if (fieldMatch || strengthMatch || adviceMatch) {
+                    content += `
+                        <div class="analysis-detail">
+                            <dt>직업 적성 분석</dt>
+                            ${fieldMatch ? `
+                                <dt>적합한 직업 분야</dt>
+                                <dd>${fieldMatch[1].trim()}</dd>
+                            ` : ''}
+                            ${strengthMatch ? `
+                                <dt>직업적 강점</dt>
+                                <dd>${strengthMatch[1].trim()}</dd>
+                            ` : ''}
+                            ${adviceMatch ? `
+                                <dt>경력 개발 조언</dt>
+                                <dd>${adviceMatch[1].trim()}</dd>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+            }
         }
 
         return content;
