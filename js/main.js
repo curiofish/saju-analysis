@@ -1524,169 +1524,84 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
     });
 
     function displayResults(result) {
-        const analysisResult = document.createElement('div');
-        analysisResult.className = 'analysis-result';
+        const resultsDiv = document.createElement('div');
+        resultsDiv.className = 'analysis-result';
 
-        // 사주 차트 섹션
-        const chartSection = document.createElement('div');
-        chartSection.className = 'analysis-section';
-        chartSection.innerHTML = `
-            <h3>사주 차트</h3>
-            <div class="analysis-content">
-                <table class="saju-chart">
-                    <thead>
-                        <tr>
-                            <th>시주</th>
-                            <th>일주</th>
-                            <th>월주</th>
-                            <th>년주</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>${result.hour?.stem || ''}${result.hour?.branch || ''}</td>
-                            <td>${result.day?.stem || ''}${result.day?.branch || ''}</td>
-                            <td>${result.month?.stem || ''}${result.month?.branch || ''}</td>
-                            <td>${result.year?.stem || ''}${result.year?.branch || ''}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        `;
+        // Clear previous results
+        const previousResults = document.getElementById('results');
+        if (previousResults) {
+            previousResults.innerHTML = '';
+        }
 
-        // 오행 분석 섹션
-        const elementalSection = document.createElement('div');
-        elementalSection.className = 'analysis-section';
-        elementalSection.innerHTML = `
-            <h3>오행 분석</h3>
-            <div class="analysis-content">
-                <div class="element-analysis">
-                    ${Object.entries(result.elements || {}).map(([element, value]) => `
-                        <div class="element-group element-${getElementClass(element)}">
-                            <div class="element-title">
-                                <span class="element-emoji">${getElementEmoji(element)}</span>
-                                <h4>${element}의 기운</h4>
-                                <span class="element-value">${Math.round(value * 100)}%</span>
-                            </div>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: ${value * 100}%"></div>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-
-        // 기본 정보 섹션
-        const basicInfoSection = document.createElement('div');
-        basicInfoSection.className = 'analysis-section';
-        basicInfoSection.innerHTML = `
+        // Basic information section
+        const basicInfo = document.createElement('div');
+        basicInfo.className = 'analysis-section';
+        basicInfo.innerHTML = `
             <h3>기본 정보</h3>
             <div class="analysis-content">
-                <div class="analysis-group">
-                    <h4>기본 성향</h4>
-                    <dl class="analysis-detail">
-                        <dt><span class="detail-icon">🌟</span>성향</dt>
-                        <dd>${result.basicInfo || ''}</dd>
-                    </dl>
-                </div>
-                <div class="analysis-group">
-                    <h4>성격 특성</h4>
-                    <dl class="analysis-detail">
-                        <dt><span class="detail-icon">💫</span>핵심 특성</dt>
-                        <dd>${result.personality?.split('강점:')[0] || ''}</dd>
-                        <dt><span class="detail-icon">💪</span>강점</dt>
-                        <dd>${result.personality?.match(/강점: (.*?)(?=약점:|$)/)?.[1] || ''}</dd>
-                        <dt><span class="detail-icon">⚠️</span>약점</dt>
-                        <dd>${result.personality?.match(/약점: (.*?)(?=조언:|$)/)?.[1] || ''}</dd>
-                        <dt><span class="detail-icon">💡</span>조언</dt>
-                        <dd>${result.personality?.match(/조언: (.*?)$/)?.[1] || ''}</dd>
-                    </dl>
-                </div>
-                <div class="analysis-group">
-                    <h4>적성과 직업</h4>
-                    <dl class="analysis-detail">
-                        <dt><span class="detail-icon">🎯</span>적합 직군</dt>
-                        <dd>${result.career?.match(/적합한 직업군: (.*?)(?=강점:|$)/)?.[1] || ''}</dd>
-                        <dt><span class="detail-icon">✨</span>강점</dt>
-                        <dd>${result.career?.match(/강점: (.*?)(?=조언:|$)/)?.[1] || ''}</dd>
-                        <dt><span class="detail-icon">💡</span>조언</dt>
-                        <dd>${result.career?.match(/조언: (.*?)$/)?.[1] || ''}</dd>
-                    </dl>
-                </div>
-                <div class="analysis-group">
-                    <h4>건강 분석</h4>
-                    <dl class="analysis-detail">
-                        <dt><span class="detail-icon">🏥</span>주의 신체</dt>
-                        <dd>주의 신체 부위: ${result.longevity?.healthPattern?.organs?.join(', ') || ''}</dd>
-                        <dt><span class="detail-icon">💡</span>건강 조언</dt>
-                        <dd>${result.longevity?.healthAdvice || ''}</dd>
-                    </dl>
-                </div>
-                <div class="analysis-group">
-                    <h4>대인 관계</h4>
-                    <dl class="analysis-detail">
-                        <dt><span class="detail-icon">🤝</span>관계 성향</dt>
-                        <dd>${result.relationships?.match(/^(.*?)(?=강점:|$)/)?.[1] || ''}</dd>
-                        <dt><span class="detail-icon">💪</span>강점</dt>
-                        <dd>${result.relationships?.match(/강점: (.*?)(?=도전 과제:|$)/)?.[1] || ''}</dd>
-                        <dt><span class="detail-icon">⚠️</span>도전 과제</dt>
-                        <dd>${result.relationships?.match(/도전 과제: (.*?)(?=조언:|$)/)?.[1] || ''}</dd>
-                        <dt><span class="detail-icon">💡</span>조언</dt>
-                        <dd>${result.relationships?.match(/조언: (.*?)$/)?.[1] || ''}</dd>
-                    </dl>
-                </div>
-                <div class="analysis-group">
-                    <h4>재물운</h4>
-                    <dl class="analysis-detail">
-                        <dt><span class="detail-icon">💰</span>재물 유형</dt>
-                        <dd>${result.fortune?.type || ''}</dd>
-                        <dt><span class="detail-icon">⏰</span>최적기</dt>
-                        <dd>${result.timing?.majorTiming || ''}</dd>
-                        <dt><span class="detail-icon">💡</span>재물 조언</dt>
-                        <dd>${result.wealth || ''}</dd>
-                    </dl>
-                </div>
-                <div class="analysis-group">
-                    <h4>운세와 조언</h4>
-                    <dl class="analysis-detail">
-                        <dt><span class="detail-icon">🎯</span>운세</dt>
-                        <dd>${result.luck || ''}</dd>
-                        <dt><span class="detail-icon">💡</span>조언</dt>
-                        <dd>${result.advice || ''}</dd>
-                    </dl>
-                </div>
+                ${generateBasicInfoContent(result)}
             </div>
         `;
+        resultsDiv.appendChild(basicInfo);
 
-        // 결과 표시
-        analysisResult.appendChild(chartSection);
-        analysisResult.appendChild(elementalSection);
-        analysisResult.appendChild(basicInfoSection);
+        // Add results div to the page
+        document.getElementById('results').appendChild(resultsDiv);
+    }
 
-        // 다시 해보기 버튼 섹션
-        const retrySection = document.createElement('div');
-        retrySection.className = 'retry-section';
-        retrySection.innerHTML = `
-            <button id="retryButton" class="retry-button">다시 해보기</button>
-        `;
-        analysisResult.appendChild(retrySection);
+    function generateBasicInfoContent(result) {
+        let content = '';
+        
+        // 대인 관계
+        if (result.relationships && result.relationships.tendency) {
+            content += `
+                <div class="analysis-detail">
+                    <dt>대인 관계</dt>
+                    <dd>${result.relationships.tendency}</dd>
+                </div>
+            `;
+        }
+        
+        // 관계 성향
+        if (result.relationships && result.relationships.characteristics) {
+            content += `
+                <div class="analysis-detail">
+                    <dt>관계 성향</dt>
+                    <dd>${result.relationships.characteristics}</dd>
+                </div>
+            `;
+        }
+        
+        // 강점
+        if (result.strengths) {
+            content += `
+                <div class="analysis-detail">
+                    <dt>강점</dt>
+                    <dd>${result.strengths}</dd>
+                </div>
+            `;
+        }
+        
+        // 도전 과제
+        if (result.challenges) {
+            content += `
+                <div class="analysis-detail">
+                    <dt>도전 과제</dt>
+                    <dd>${result.challenges}</dd>
+                </div>
+            `;
+        }
+        
+        // 조언
+        if (result.advice) {
+            content += `
+                <div class="analysis-detail">
+                    <dt>조언</dt>
+                    <dd>${result.advice}</dd>
+                </div>
+            `;
+        }
 
-        // 기존 결과 제거 후 새로운 결과 추가
-        const resultSection = document.querySelector('.result-section');
-        resultSection.innerHTML = '';
-        resultSection.appendChild(analysisResult);
-        resultSection.style.display = 'block';
-
-        // 다운로드 버튼 표시
-        document.getElementById('downloadPDF').style.display = 'block';
-
-        // 다시 해보기 버튼 이벤트 리스너 추가
-        document.getElementById('retryButton').addEventListener('click', function() {
-            document.getElementById('sajuForm').reset();
-            resultSection.style.display = 'none';
-            document.querySelector('.input-section').scrollIntoView({ behavior: 'smooth' });
-        });
+        return content;
     }
 
     // 인생시기별 운세 내용 생성 함수
