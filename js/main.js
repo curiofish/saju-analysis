@@ -1646,30 +1646,40 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
             <h3>기본 정보</h3>
             <div class="analysis-content">
                 <div class="analysis-group">
+                    <h4>기본 성향</h4>
                     <p>${result.basicInfo || ''}</p>
                 </div>
                 <div class="analysis-group">
-                    <h4>성격</h4>
+                    <h4>성격 특성</h4>
                     <p>${result.personality || ''}</p>
                 </div>
                 <div class="analysis-group">
-                    <h4>직업</h4>
+                    <h4>적성과 직업</h4>
                     <p>${result.career || ''}</p>
+                    <p>${result.talent?.type || ''}</p>
+                    <p>추천 분야: ${result.talent?.fields?.join(', ') || ''}</p>
                 </div>
                 <div class="analysis-group">
-                    <h4>건강</h4>
+                    <h4>건강 분석</h4>
                     <p>${result.health || ''}</p>
+                    <p>주의 신체 부위: ${result.longevity?.healthPattern?.organs?.join(', ') || ''}</p>
+                    <p>${result.longevity?.healthAdvice || ''}</p>
                 </div>
-            </div>
-        `;
-
-        // 인생시기별 운세 섹션
-        const lifeStagesSection = document.createElement('div');
-        lifeStagesSection.className = 'life-stages-section';
-        lifeStagesSection.innerHTML = `
-            <h3>인생시기별 운세</h3>
-            <div class="analysis-content">
-                ${generateLifeStageContent(result)}
+                <div class="analysis-group">
+                    <h4>대인 관계</h4>
+                    <p>${result.relationships || ''}</p>
+                </div>
+                <div class="analysis-group">
+                    <h4>재물운</h4>
+                    <p>${result.wealth || ''}</p>
+                    <p>재물 유형: ${result.fortune?.type || ''}</p>
+                    <p>최적기: ${result.timing?.majorTiming || ''}</p>
+                </div>
+                <div class="analysis-group">
+                    <h4>운세와 조언</h4>
+                    <p>${result.luck || ''}</p>
+                    <p>${result.advice || ''}</p>
+                </div>
             </div>
         `;
 
@@ -1677,7 +1687,6 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         analysisResult.appendChild(chartSection);
         analysisResult.appendChild(elementalSection);
         analysisResult.appendChild(basicInfoSection);
-        analysisResult.appendChild(lifeStagesSection);
 
         // 다시 해보기 버튼 섹션
         const retrySection = document.createElement('div');
