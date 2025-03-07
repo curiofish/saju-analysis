@@ -116,13 +116,17 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // 월 천간 계산
     function calculateMonthStem(year, month) {
+        // 월 천간은 년도의 천간에 따라 시작점이 달라짐
         const yearStemIndex = (year - 4) % 10;
         const monthOffset = (yearStemIndex % 5) * 2;
-        return heavenlyStems[(monthOffset + month - 1) % 10];
+        const stemIndex = (monthOffset + month - 1) % 10;
+        return heavenlyStems[stemIndex >= 0 ? stemIndex : stemIndex + 10];
     }
 
     // 월 지지 계산
     function calculateMonthBranch(month) {
+        // 월 지지는 고정된 순서를 가짐
+        // 1월은 寅(3)부터 시작
         const monthToIndex = {
             1: 2,  // 寅
             2: 3,  // 卯
@@ -182,18 +186,43 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // 시간 천간 계산
     function calculateHourStem(hour) {
-        // 23시는 다음날 새벽 1시 이전까지로 처리
-        const adjustedHour = hour === 23 ? 0 : hour;
-        const stemIndex = Math.floor(adjustedHour / 2);
-        return heavenlyStems[stemIndex % 10];
+        // 시간 천간은 12개의 시간대로 나누어짐
+        // 각 시간대는 2시간씩
+        const timeMap = {
+            23: 0, 0: 0,     // 23:00~01:00 子
+            1: 1, 2: 1,      // 01:00~03:00 丑
+            3: 2, 4: 2,      // 03:00~05:00 寅
+            5: 3, 6: 3,      // 05:00~07:00 卯
+            7: 4, 8: 4,      // 07:00~09:00 辰
+            9: 5, 10: 5,     // 09:00~11:00 巳
+            11: 6, 12: 6,    // 11:00~13:00 午
+            13: 7, 14: 7,    // 13:00~15:00 未
+            15: 8, 16: 8,    // 15:00~17:00 申
+            17: 9, 18: 9,    // 17:00~19:00 酉
+            19: 0, 20: 0,    // 19:00~21:00 戌
+            21: 1, 22: 1     // 21:00~23:00 亥
+        };
+        return heavenlyStems[timeMap[hour]];
     }
 
     // 시간 지지 계산
     function calculateHourBranch(hour) {
-        // 23시는 다음날 새벽 1시 이전까지로 처리
-        const adjustedHour = hour === 23 ? 0 : hour;
-        const branchIndex = Math.floor(adjustedHour / 2);
-        return earthlyBranches[branchIndex % 12];
+        // 시간 지지는 12개의 시간대로 나누어짐
+        const timeMap = {
+            23: 0, 0: 0,     // 23:00~01:00 子
+            1: 1, 2: 1,      // 01:00~03:00 丑
+            3: 2, 4: 2,      // 03:00~05:00 寅
+            5: 3, 6: 3,      // 05:00~07:00 卯
+            7: 4, 8: 4,      // 07:00~09:00 辰
+            9: 5, 10: 5,     // 09:00~11:00 巳
+            11: 6, 12: 6,    // 11:00~13:00 午
+            13: 7, 14: 7,    // 13:00~15:00 未
+            15: 8, 16: 8,    // 15:00~17:00 申
+            17: 9, 18: 9,    // 17:00~19:00 酉
+            19: 10, 20: 10,  // 19:00~21:00 戌
+            21: 11, 22: 11   // 21:00~23:00 亥
+        };
+        return earthlyBranches[timeMap[hour]];
     }
 
     // 오행 계산
