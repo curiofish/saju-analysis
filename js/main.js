@@ -50,8 +50,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 입력값 검증 함수
     function validateDate(year, month, day) {
-        const date = new Date(year, month - 1, day);
-        return date.getDate() === day && date.getMonth() === month - 1;
+        // 연도 검증 (1900년 이후만 허용)
+        if (year < 1900) {
+            return false;
+        }
+        
+        // 각 월의 마지막 날짜
+        const lastDayOfMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        
+        // 윤년 체크
+        if (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) {
+            lastDayOfMonth[1] = 29;
+        }
+        
+        // 월 검증
+        if (month < 1 || month > 12) {
+            return false;
+        }
+        
+        // 일 검증
+        if (day < 1 || day > lastDayOfMonth[month - 1]) {
+            return false;
+        }
+        
+        return true;
     }
 
     // 로딩 상태 표시 함수
@@ -148,22 +170,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // 사주 계산
     function calculateSaju(year, month, day, hour) {
         return {
-            year: {
+                year: {
                 stem: calculateYearStem(year),
                 branch: calculateYearBranch(year),
                 element: calculateFiveElement(calculateYearStem(year))
-            },
-            month: {
+                },
+                month: {
                 stem: calculateMonthStem(year, month),
                 branch: calculateMonthBranch(month),
                 element: calculateFiveElement(calculateMonthStem(year, month))
-            },
-            day: {
+                },
+                day: {
                 stem: calculateDayStem(year, month, day),
                 branch: calculateDayBranch(year, month, day),
                 element: calculateFiveElement(calculateDayStem(year, month, day))
-            },
-            hour: {
+                },
+                hour: {
                 stem: calculateHourStem(hour),
                 branch: calculateHourBranch(hour),
                 element: calculateFiveElement(calculateHourStem(hour))
@@ -1545,18 +1567,11 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
 
             // 날짜 유효성 검사
             if (!validateDate(year, month, day)) {
-                throw new Error('유효하지 않은 날짜입니다.');
+                throw new Error('유효하지 않은 날짜입니다. 날짜를 다시 확인해주세요.');
             }
 
-            // 음력일 경우 양력으로 변환 (추후 구현)
-            let solarDate = { year, month, day };
-            if (isLunar) {
-                // TODO: 음력을 양력으로 변환하는 로직 구현
-                console.warn('음력 변환은 아직 구현되지 않았습니다.');
-            }
-
-            // 사주 계산
-            const saju = calculateSaju(solarDate.year, solarDate.month, solarDate.day, hour);
+            // 사주 계산에 사용할 날짜 값을 직접 사용
+            const saju = calculateSaju(year, month, day, hour);
             const elements = analyzeFiveElements(saju);
             const result = analyzeResult(saju, elements);
 
@@ -1567,7 +1582,7 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
             const resultSection = document.querySelector('.result-section');
             if (resultSection) {
                 resultSection.style.display = 'block';
-                resultSection.scrollIntoView({ behavior: 'smooth' });
+            resultSection.scrollIntoView({ behavior: 'smooth' });
             }
 
         } catch (error) {
@@ -1597,10 +1612,10 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
                             <th>년주</th>
                         </tr>
                         <tr>
-                            <td>${result.saju.hour.stem}${result.saju.hour.branch}</td>
-                            <td>${result.saju.day.stem}${result.saju.day.branch}</td>
-                            <td>${result.saju.month.stem}${result.saju.month.branch}</td>
-                            <td>${result.saju.year.stem}${result.saju.year.branch}</td>
+                            <td>${result.hour?.stem || ''}${result.hour?.branch || ''}</td>
+                            <td>${result.day?.stem || ''}${result.day?.branch || ''}</td>
+                            <td>${result.month?.stem || ''}${result.month?.branch || ''}</td>
+                            <td>${result.year?.stem || ''}${result.year?.branch || ''}</td>
                         </tr>
                     </table>
                 </div>
@@ -1613,7 +1628,7 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         elementalSection.innerHTML = `
             <h3>오행 분석</h3>
             <div class="analysis-content">
-                ${Object.entries(result.elements).map(([element, value]) => `
+                ${Object.entries(result.elements || {}).map(([element, value]) => `
                     <div class="analysis-group element-${getElementClass(element)}">
                         <h4>${getElementEmoji(element)} ${element}의 기운 (${Math.round(value * 100)}%)</h4>
                         <div class="progress-bar">
@@ -1631,28 +1646,30 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
             <h3>기본 정보</h3>
             <div class="analysis-content">
                 <div class="analysis-group">
-                    <h4>천복(天福) 분석</h4>
-                    <p>${result.fortune.type} (강도: ${Math.round(result.fortune.strength)}%)</p>
+                    <p>${result.basicInfo || ''}</p>
                 </div>
                 <div class="analysis-group">
-                    <h4>천시(天時) 분석</h4>
-                    <p>${result.timing.description}</p>
+                    <h4>성격</h4>
+                    <p>${result.personality || ''}</p>
+                </div>
+                <div class="analysis-group">
+                    <h4>직업</h4>
+                    <p>${result.career || ''}</p>
+                </div>
+                <div class="analysis-group">
+                    <h4>건강</h4>
+                    <p>${result.health || ''}</p>
                 </div>
             </div>
         `;
 
         // 인생시기별 운세 섹션
         const lifeStagesSection = document.createElement('div');
-        lifeStagesSection.className = 'analysis-section';
+        lifeStagesSection.className = 'life-stages-section';
         lifeStagesSection.innerHTML = `
             <h3>인생시기별 운세</h3>
             <div class="analysis-content">
-                ${result.lifeStages.map((stage, index) => `
-                    <div class="analysis-group element-${getElementClass(stage.element)}">
-                        <h4>${getLifeStageEmoji(index)} ${stage.period}</h4>
-                        <p>${stage.description}</p>
-                    </div>
-                `).join('')}
+                ${generateLifeStageContent(result)}
             </div>
         `;
 
@@ -1662,6 +1679,14 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         analysisResult.appendChild(basicInfoSection);
         analysisResult.appendChild(lifeStagesSection);
 
+        // 다시 해보기 버튼 섹션
+        const retrySection = document.createElement('div');
+        retrySection.className = 'retry-section';
+        retrySection.innerHTML = `
+            <button id="retryButton" class="retry-button">다시 해 보기</button>
+        `;
+        analysisResult.appendChild(retrySection);
+
         // 기존 결과 제거 후 새로운 결과 추가
         const resultSection = document.querySelector('.result-section');
         resultSection.innerHTML = '';
@@ -1670,6 +1695,160 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
 
         // 다운로드 버튼 표시
         document.getElementById('downloadPDF').style.display = 'block';
+
+        // 다시 해보기 버튼 이벤트 리스너 추가
+        document.getElementById('retryButton').addEventListener('click', function() {
+            document.getElementById('sajuForm').reset();
+            resultSection.style.display = 'none';
+            document.querySelector('.input-section').scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+
+    // 인생시기별 운세 내용 생성 함수
+    function generateLifeStageContent(result) {
+        const stages = [
+            { name: '초년운 (0~15세)', key: 'early' },
+            { name: '청년운 (16~30세)', key: 'youth' },
+            { name: '중년운 (31~45세)', key: 'middle' },
+            { name: '장년운 (46~60세)', key: 'mature' },
+            { name: '노년운 (61세 이후)', key: 'elder' }
+        ];
+
+        // 천간과 지지의 조합에 따른 운세 결정
+        const yearStem = result.year?.stem;
+        const yearBranch = result.year?.branch;
+        const dayStem = result.day?.stem;
+        
+        return stages.map((stage, index) => {
+            const element = Object.keys(result.elements || {})[index % 5];
+            const fortune = calculateLifeStageFortune(yearStem, yearBranch, dayStem, stage.key);
+            
+            return `
+                <div class="analysis-group element-${getElementClass(element)}">
+                    <h4>${getLifeStageEmoji(index)} ${stage.name}</h4>
+                    <p>${fortune}</p>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // 각 생애주기별 운세 계산 함수
+    function calculateLifeStageFortune(yearStem, yearBranch, dayStem, stage) {
+        const stemFortune = {
+            '甲': {
+                early: '창의력과 학습능력이 뛰어나며, 예술적 재능이 일찍 발현됩니다.',
+                youth: '독창적인 아이디어로 주목받으며, 새로운 도전에서 성공합니다.',
+                middle: '창의적 리더십이 빛을 발하며, 사업적 성과를 이룹니다.',
+                mature: '경험을 바탕으로 한 혁신으로 큰 성과를 이룹니다.',
+                elder: '지혜로운 조언자로서 후배들에게 영감을 줍니다.'
+            },
+            '乙': {
+                early: '섬세한 감성과 예술적 감각이 돋보입니다.',
+                youth: '유연한 사고로 다양한 기회를 포착합니다.',
+                middle: '안정적인 성장과 함께 창의적 성과를 이룹니다.',
+                mature: '균형 잡힌 판단으로 성공적인 결실을 맺습니다.',
+                elder: '풍부한 경험을 바탕으로 후학을 양성합니다.'
+            },
+            '丙': {
+                early: '활발한 성격으로 리더십이 일찍 발현됩니다.',
+                youth: '열정적인 도전정신으로 목표를 달성합니다.',
+                middle: '강력한 추진력으로 큰 성과를 이룹니다.',
+                mature: '카리스마 있는 리더로서 조직을 이끕니다.',
+                elder: '존경받는 원로로서 영향력을 발휘합니다.'
+            },
+            '丁': {
+                early: '따뜻한 마음과 친화력이 돋보입니다.',
+                youth: '사교성과 리더십으로 주목받습니다.',
+                middle: '감성적 리더십으로 조직을 화합시킵니다.',
+                mature: '원숙한 통찰력으로 성과를 이룹니다.',
+                elder: '따뜻한 조언자로서 후배들을 이끕니다.'
+            },
+            '戊': {
+                early: '안정적인 성장과 학습능력을 보입니다.',
+                youth: '신중한 판단력으로 기회를 포착합니다.',
+                middle: '견실한 성과와 안정적 성장을 이룹니다.',
+                mature: '믿음직한 리더로서 조직을 이끕니다.',
+                elder: '신뢰받는 조언자로서 역할을 합니다.'
+            },
+            '己': {
+                early: '차분한 성격과 높은 집중력을 보입니다.',
+                youth: '꾸준한 노력으로 성과를 이룹니다.',
+                middle: '안정적인 성장과 발전을 이룹니다.',
+                mature: '신중한 판단으로 성공을 이끕니다.',
+                elder: '지혜로운 조언으로 후배를 이끕니다.'
+            },
+            '庚': {
+                early: '정확한 판단력과 분석력이 돋보입니다.',
+                youth: '체계적인 접근으로 목표를 달성합니다.',
+                middle: '전문성을 바탕으로 성과를 이룹니다.',
+                mature: '정확한 통찰력으로 조직을 이끕니다.',
+                elder: '전문적 지식으로 후학을 양성합니다.'
+            },
+            '辛': {
+                early: '예리한 직관력과 분석력을 보입니다.',
+                youth: '전문성을 바탕으로 성장합니다.',
+                middle: '혁신적 접근으로 성과를 이룹니다.',
+                mature: '탁월한 판단력으로 성공을 이끕니다.',
+                elder: '날카로운 통찰력으로 조언합니다.'
+            },
+            '壬': {
+                early: '뛰어난 지적 능력과 창의성을 보입니다.',
+                youth: '혁신적 사고로 기회를 창출합니다.',
+                middle: '독창적 접근으로 성과를 이룹니다.',
+                mature: '지혜로운 판단으로 조직을 이끕니다.',
+                elder: '깊은 통찰력으로 후배를 지도합니다.'
+            },
+            '癸': {
+                early: '깊이 있는 사고력과 학습능력을 보입니다.',
+                youth: '지적 탐구로 성장을 이룹니다.',
+                middle: '심도 있는 전문성으로 인정받습니다.',
+                mature: '깊은 지혜로 성공을 이끕니다.',
+                elder: '풍부한 지혜로 후학을 양성합니다.'
+            }
+        };
+
+        const branchFortune = {
+            '子': '지적 성장과 학문적 성취가 두드러집니다.',
+            '丑': '안정적인 성장과 꾸준한 발전이 예상됩니다.',
+            '寅': '도전정신과 진취적 기상이 빛을 발합니다.',
+            '卯': '창의력과 예술적 재능이 개화합니다.',
+            '辰': '전략적 사고와 리더십이 발휘됩니다.',
+            '巳': '통찰력과 결단력이 돋보입니다.',
+            '午': '열정적 추진력과 카리스마가 빛납니다.',
+            '未': '조화로운 인간관계와 협력이 중요합니다.',
+            '申': '논리적 사고와 실행력이 강점입니다.',
+            '酉': '정확한 판단력과 세심함이 빛납니다.',
+            '戌': '책임감과 신뢰성이 인정받습니다.',
+            '亥': '창의적 사고와 혁신성이 두각을 나타냅니다.'
+        };
+
+        // 기본 운세 텍스트 생성
+        let fortune = stemFortune[yearStem]?.[stage] || '';
+        
+        // 지지의 특성 추가
+        if (branchFortune[yearBranch]) {
+            fortune += ' ' + branchFortune[yearBranch];
+        }
+
+        // 일간의 영향 추가
+        if (dayStem) {
+            const dayInfluence = {
+                '甲': '창의적 재능이 더해져',
+                '乙': '섬세한 감각이 더해져',
+                '丙': '적극적 추진력이 더해져',
+                '丁': '따뜻한 리더십이 더해져',
+                '戊': '안정적 기반이 더해져',
+                '己': '신중한 판단력이 더해져',
+                '庚': '체계적 능력이 더해져',
+                '辛': '예리한 통찰력이 더해져',
+                '壬': '혁신적 사고가 더해져',
+                '癸': '지혜로운 판단이 더해져'
+            };
+            
+            fortune += ' ' + (dayInfluence[dayStem] || '') + ' 더욱 빛을 발합니다.';
+        }
+
+        return fortune || '운세를 분석할 수 없습니다.';
     }
 
     // 오행 이모지 가져오기
@@ -1701,4 +1880,16 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         };
         return elementClasses[element] || '';
     }
+
+    // 다시 해 보기 버튼 이벤트 리스너
+    document.getElementById('retryButton').addEventListener('click', function() {
+        // 폼 초기화
+        document.getElementById('sajuForm').reset();
+        
+        // 결과 섹션 숨기기
+        document.querySelector('.result-section').style.display = 'none';
+        
+        // 입력 섹션으로 스크롤
+        document.querySelector('.input-section').scrollIntoView({ behavior: 'smooth' });
+    });
 }); 
