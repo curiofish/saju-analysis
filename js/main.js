@@ -1,4 +1,19 @@
-document.addEventListener('DOMContentLoaded', function() {
+// 패턴 데이터를 저장할 전역 변수
+let patterns = null;
+
+// 패턴 데이터 로드 함수
+async function loadPatterns() {
+    try {
+        const response = await fetch('js/patterns.json');
+        patterns = await response.json();
+        console.log('패턴 데이터 로드 완료');
+    } catch (error) {
+        console.error('패턴 데이터 로드 실패:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadPatterns();
     const sajuForm = document.getElementById('sajuForm');
     const resultSection = document.querySelector('.result-section');
     const submitButton = document.querySelector('button[type="submit"]');
@@ -942,90 +957,48 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
 이는 당신이 ${info.characteristics}의 성질을 타고났음을 의미합니다.`;
     }
 
+    // 성격 분석 생성 함수 수정
     function generatePersonality(dominantElement) {
-        const personalityInfo = {
-            '木': {
-                core: '창의적이고 독립적인 성격으로, 새로운 아이디어를 제시하는 것을 좋아합니다.',
-                strength: '혁신적인 사고와 진취적인 태도가 큰 장점입니다.',
-                challenge: '때로는 너무 이상적이거나 고집스러울 수 있습니다.',
-                growth: '안정성과 현실성을 조금 더 고려하면 좋습니다.',
-                potential: '예술적 재능과 창의적 리더십이 잠재되어 있습니다.'
-            },
-            '火': {
-                core: '열정적이고 적극적인 성격으로, 리더십이 뛰어납니다.',
-                strength: '강한 카리스마와 영향력 있는 언변이 특징입니다.',
-                challenge: '감정적 기복이 있을 수 있으며, 때로 성급할 수 있습니다.',
-                growth: '차분함과 인내심을 기르면 더욱 좋습니다.',
-                potential: '타인을 이끌고 영감을 주는 능력이 있습니다.'
-            },
-            '土': {
-                core: '안정적이고 신중한 성격으로, 책임감이 강합니다.',
-                strength: '믿음직하고 성실하며 조직력이 뛰어납니다.',
-                challenge: '변화를 두려워하고 보수적일 수 있습니다.',
-                growth: '새로운 도전에 더 열린 마음을 가지면 좋습니다.',
-                potential: '관리와 조정 능력이 뛰어나며 신뢰를 얻기 쉽습니다.'
-            },
-            '金': {
-                core: '정직하고 원칙적인 성격으로, 완벽을 추구합니다.',
-                strength: '정확하고 체계적이며 분석력이 뛰어납니다.',
-                challenge: '지나친 완벽주의로 스트레스를 받을 수 있습니다.',
-                growth: '유연성을 기르고 실수를 받아들이는 연습이 필요합니다.',
-                potential: '뛰어난 판단력과 정의감으로 신뢰를 얻습니다.'
-            },
-            '水': {
-                core: '지적이고 통찰력 있는 성격으로, 깊이 있는 사고를 합니다.',
-                strength: '높은 지적 능력과 직관력이 돋보입니다.',
-                challenge: '때로는 너무 깊이 생각하여 결정을 미룰 수 있습니다.',
-                growth: '실천력과 결단력을 기르면 더욱 좋습니다.',
-                potential: '학문적 성취와 창의적 문제 해결 능력이 뛰어납니다.'
-            }
-        };
-
-        const info = personalityInfo[dominantElement];
-        return Object.values(info).join('\n');
+        if (!patterns) return '패턴 데이터를 불러오는 중입니다...';
+        
+        const personalityData = patterns.personality[dominantElement];
+        return `
+            ${personalityData.core}
+            
+            강점: ${personalityData.strength}
+            약점: ${personalityData.weakness}
+            
+            조언: ${personalityData.advice}
+        `;
     }
 
+    // 직업 분석 생성 함수 수정
     function generateCareer(dominantElement) {
-        const careerInfo = {
-            '木': {
-                suitable: '예술, 디자인, 교육, 창의적 분야가 적성에 잘 맞습니다.',
-                detail: '특히 창의력을 필요로 하는 직업이 추천됩니다.',
-                examples: '디자이너, 교사, 작가, 건축가, 환경 컨설턴트 등이 유망합니다.',
-                timing: '오전 시간대에 업무 효율이 가장 높습니다.',
-                advice: '자유로운 업무 환경에서 능력을 최대한 발휘할 수 있습니다.'
-            },
-            '火': {
-                suitable: '경영, 영업, 마케팅, 리더십 분야가 적성에 잘 맞습니다.',
-                detail: '사람들과 소통하고 이끄는 직업이 추천됩니다.',
-                examples: 'CEO, 영업관리자, 마케팅 디렉터, 연예인, 정치인 등이 유망합니다.',
-                timing: '오후 시간대에 업무 효율이 가장 높습니다.',
-                advice: '활동적이고 역동적인 환경에서 최고의 성과를 낼 수 있습니다.'
-            },
-            '土': {
-                suitable: '행정, 서비스, 관리, 부동산 분야가 적성에 잘 맞습니다.',
-                detail: '안정적이고 체계적인 직업이 추천됩니다.',
-                examples: '공무원, 부동산 전문가, 프로젝트 매니저, 보험설계사 등이 유망합니다.',
-                timing: '규칙적인 업무 시간에 효율이 가장 높습니다.',
-                advice: '안정적이고 체계적인 환경에서 능력을 발휘할 수 있습니다.'
-            },
-            '金': {
-                suitable: '법률, 금융, 회계, IT 분야가 적성에 잘 맞습니다.',
-                detail: '정확성과 분석력을 필요로 하는 직업이 추천됩니다.',
-                examples: '변호사, 회계사, 금융분석가, 프로그래머 등이 유망합니다.',
-                timing: '이른 아침 시간대에 업무 효율이 가장 높습니다.',
-                advice: '체계적이고 전문적인 환경에서 최고의 성과를 낼 수 있습니다.'
-            },
-            '水': {
-                suitable: '연구, 분석, 컨설팅, 의료 분야가 적성에 잘 맞습니다.',
-                detail: '깊이 있는 전문성을 필요로 하는 직업이 추천됩니다.',
-                examples: '연구원, 의사, 심리상담사, 투자분석가 등이 유망합니다.',
-                timing: '늦은 저녁 시간대에 업무 효율이 가장 높습니다.',
-                advice: '독립적이고 전문적인 환경에서 능력을 발휘할 수 있습니다.'
-            }
-        };
+        if (!patterns) return '패턴 데이터를 불러오는 중입니다...';
+        
+        const careerData = patterns.career[dominantElement];
+        return `
+            적합한 직업군: ${careerData.suitable.join(', ')}
+            
+            강점: ${careerData.strengths}
+            
+            조언: ${careerData.advice}
+        `;
+    }
 
-        const info = careerInfo[dominantElement];
-        return Object.values(info).join('\n');
+    // 대인관계 분석 생성 함수 수정
+    function generateRelationships(dominantElement) {
+        if (!patterns) return '패턴 데이터를 불러오는 중입니다...';
+        
+        const relationData = patterns.relationships[dominantElement];
+        return `
+            ${relationData.characteristics}
+            
+            강점: ${relationData.strengths}
+            도전 과제: ${relationData.challenges}
+            
+            조언: ${relationData.advice}
+        `;
     }
 
     function generateHealth(dominantElement) {
@@ -1068,49 +1041,6 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         };
 
         const info = healthInfo[dominantElement];
-        return Object.values(info).join('\n');
-    }
-
-    function generateRelationships(dominantElement) {
-        const relationshipInfo = {
-            '木': {
-                style: '독립적이고 창의적인 관계를 추구합니다.',
-                strength: '새로운 아이디어와 활동을 통해 관계를 발전시킵니다.',
-                challenge: '때로는 너무 독립적이어서 상대방을 소외시킬 수 있습니다.',
-                ideal: '자유로운 소통과 성장이 가능한 관계가 이상적입니다.',
-                advice: '상대방의 안정성 욕구도 고려해야 합니다.'
-            },
-            '火': {
-                style: '열정적이고 적극적인 관계를 추구합니다.',
-                strength: '강한 카리스마로 관계를 리드합니다.',
-                challenge: '때로는 너무 강렬해서 상대방을 부담스럽게 할 수 있습니다.',
-                ideal: '활동적이고 자극이 있는 관계가 이상적입니다.',
-                advice: '상대방의 페이스도 존중해야 합니다.'
-            },
-            '土': {
-                style: '안정적이고 신뢰감 있는 관계를 추구합니다.',
-                strength: '믿음직하고 책임감 있는 태도로 관계를 유지합니다.',
-                challenge: '때로는 너무 보수적이어서 관계가 정체될 수 있습니다.',
-                ideal: '상호 신뢰와 안정감이 있는 관계가 이상적입니다.',
-                advice: '새로운 경험도 함께 시도해보세요.'
-            },
-            '金': {
-                style: '정직하고 원칙적인 관계를 추구합니다.',
-                strength: '명확한 의사소통으로 관계를 발전시킵니다.',
-                challenge: '때로는 너무 완벽주의적이어서 관계가 경직될 수 있습니다.',
-                ideal: '서로 존중하고 이해하는 관계가 이상적입니다.',
-                advice: '때로는 유연한 태도도 필요합니다.'
-            },
-            '水': {
-                style: '지적이고 깊이 있는 관계를 추구합니다.',
-                strength: '깊은 이해와 통찰로 관계를 발전시킵니다.',
-                challenge: '때로는 너무 분석적이어서 감정적 교류가 부족할 수 있습니다.',
-                ideal: '지적 교류와 정서적 교감이 균형 잡힌 관계가 이상적입니다.',
-                advice: '감정적 표현도 중요합니다.'
-            }
-        };
-
-        const info = relationshipInfo[dominantElement];
         return Object.values(info).join('\n');
     }
 
