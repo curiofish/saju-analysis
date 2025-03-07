@@ -1702,5 +1702,27 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         });
 
         resultSection.appendChild(analysisContainer);
+
+        // 인생시기별 운세 표시
+        const lifeStages = ['earlyLife', 'youthLife', 'middleLife', 'matureLife', 'elderLife'];
+        const stageElements = ['wood', 'fire', 'earth', 'metal', 'water'];
+        
+        lifeStages.forEach((stage, index) => {
+            const content = result.lifeStages[stage];
+            if (content) {
+                const stageElement = document.getElementById(stage);
+                if (stageElement) {
+                    const stageGroup = stageElement.closest('.stage-group');
+                    if (stageGroup) {
+                        // 기존 오행 클래스 제거
+                        stageGroup.classList.remove('wood', 'fire', 'earth', 'metal', 'water');
+                        // 해당 시기의 주요 오행 클래스 추가
+                        const dominantElement = content.dominantElement || stageElements[index];
+                        stageGroup.classList.add(dominantElement.toLowerCase());
+                    }
+                    stageElement.innerHTML = content.description || '';
+                }
+            }
+        });
     }
 }); 
