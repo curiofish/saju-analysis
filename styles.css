@@ -616,4 +616,54 @@ header h2 {
     .retry-section {
         border-top-color: rgba(255, 255, 255, 0.1);
     }
+}
+
+/* 분석 내용 스타일 */
+.analysis-detail {
+    margin: 15px 0;
+    padding: 12px 15px;
+    border-radius: 8px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.analysis-detail dt {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.analysis-detail dd {
+    margin: 0 0 12px 0;
+    padding-left: 24px;
+    color: #34495e;
+    line-height: 1.5;
+}
+
+.analysis-detail dd:last-child {
+    margin-bottom: 0;
+}
+
+/* 분석 아이콘 */
+.detail-icon {
+    font-size: 1.1em;
+    opacity: 0.8;
+}
+
+/* 다크모드 대응 */
+@media (prefers-color-scheme: dark) {
+    .analysis-detail {
+        background: linear-gradient(145deg, rgba(40,44,52,0.8), rgba(30,33,39,0.6));
+    }
+
+    .analysis-detail dt {
+        color: #e9ecef;
+    }
+
+    .analysis-detail dd {
+        color: #ced4da;
+    }
 } 

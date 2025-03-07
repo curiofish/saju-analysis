@@ -1585,38 +1585,76 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
             <div class="analysis-content">
                 <div class="analysis-group">
                     <h4>기본 성향</h4>
-                    <p>${result.basicInfo || ''}</p>
+                    <dl class="analysis-detail">
+                        <dt><span class="detail-icon">🌟</span>성향</dt>
+                        <dd>${result.basicInfo || ''}</dd>
+                    </dl>
                 </div>
                 <div class="analysis-group">
                     <h4>성격 특성</h4>
-                    <p>${result.personality || ''}</p>
+                    <dl class="analysis-detail">
+                        <dt><span class="detail-icon">💫</span>핵심 특성</dt>
+                        <dd>${result.personality?.split('강점:')[0] || ''}</dd>
+                        <dt><span class="detail-icon">💪</span>강점</dt>
+                        <dd>${result.personality?.match(/강점: (.*?)(?=약점:|$)/)?.[1] || ''}</dd>
+                        <dt><span class="detail-icon">⚠️</span>약점</dt>
+                        <dd>${result.personality?.match(/약점: (.*?)(?=조언:|$)/)?.[1] || ''}</dd>
+                        <dt><span class="detail-icon">💡</span>조언</dt>
+                        <dd>${result.personality?.match(/조언: (.*?)$/)?.[1] || ''}</dd>
+                    </dl>
                 </div>
                 <div class="analysis-group">
                     <h4>적성과 직업</h4>
-                    <p>${result.career || ''}</p>
-                    <p>${result.talent?.type || ''}</p>
-                    <p>추천 분야: ${result.talent?.fields?.join(', ') || ''}</p>
+                    <dl class="analysis-detail">
+                        <dt><span class="detail-icon">🎯</span>적합 직군</dt>
+                        <dd>${result.career?.match(/적합한 직업군: (.*?)(?=강점:|$)/)?.[1] || ''}</dd>
+                        <dt><span class="detail-icon">✨</span>강점</dt>
+                        <dd>${result.career?.match(/강점: (.*?)(?=조언:|$)/)?.[1] || ''}</dd>
+                        <dt><span class="detail-icon">💡</span>조언</dt>
+                        <dd>${result.career?.match(/조언: (.*?)$/)?.[1] || ''}</dd>
+                    </dl>
                 </div>
                 <div class="analysis-group">
                     <h4>건강 분석</h4>
-                    <p>${result.health || ''}</p>
-                    <p>주의 신체 부위: ${result.longevity?.healthPattern?.organs?.join(', ') || ''}</p>
-                    <p>${result.longevity?.healthAdvice || ''}</p>
+                    <dl class="analysis-detail">
+                        <dt><span class="detail-icon">🏥</span>주의 신체</dt>
+                        <dd>주의 신체 부위: ${result.longevity?.healthPattern?.organs?.join(', ') || ''}</dd>
+                        <dt><span class="detail-icon">💡</span>건강 조언</dt>
+                        <dd>${result.longevity?.healthAdvice || ''}</dd>
+                    </dl>
                 </div>
                 <div class="analysis-group">
                     <h4>대인 관계</h4>
-                    <p>${result.relationships || ''}</p>
+                    <dl class="analysis-detail">
+                        <dt><span class="detail-icon">🤝</span>관계 성향</dt>
+                        <dd>${result.relationships?.match(/^(.*?)(?=강점:|$)/)?.[1] || ''}</dd>
+                        <dt><span class="detail-icon">💪</span>강점</dt>
+                        <dd>${result.relationships?.match(/강점: (.*?)(?=도전 과제:|$)/)?.[1] || ''}</dd>
+                        <dt><span class="detail-icon">⚠️</span>도전 과제</dt>
+                        <dd>${result.relationships?.match(/도전 과제: (.*?)(?=조언:|$)/)?.[1] || ''}</dd>
+                        <dt><span class="detail-icon">💡</span>조언</dt>
+                        <dd>${result.relationships?.match(/조언: (.*?)$/)?.[1] || ''}</dd>
+                    </dl>
                 </div>
                 <div class="analysis-group">
                     <h4>재물운</h4>
-                    <p>${result.wealth || ''}</p>
-                    <p>재물 유형: ${result.fortune?.type || ''}</p>
-                    <p>최적기: ${result.timing?.majorTiming || ''}</p>
+                    <dl class="analysis-detail">
+                        <dt><span class="detail-icon">💰</span>재물 유형</dt>
+                        <dd>${result.fortune?.type || ''}</dd>
+                        <dt><span class="detail-icon">⏰</span>최적기</dt>
+                        <dd>${result.timing?.majorTiming || ''}</dd>
+                        <dt><span class="detail-icon">💡</span>재물 조언</dt>
+                        <dd>${result.wealth || ''}</dd>
+                    </dl>
                 </div>
                 <div class="analysis-group">
                     <h4>운세와 조언</h4>
-                    <p>${result.luck || ''}</p>
-                    <p>${result.advice || ''}</p>
+                    <dl class="analysis-detail">
+                        <dt><span class="detail-icon">🎯</span>운세</dt>
+                        <dd>${result.luck || ''}</dd>
+                        <dt><span class="detail-icon">💡</span>조언</dt>
+                        <dd>${result.advice || ''}</dd>
+                    </dl>
                 </div>
             </div>
         `;
