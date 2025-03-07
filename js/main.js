@@ -1524,28 +1524,48 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
     });
 
     function displayResults(result) {
-        const resultsDiv = document.createElement('div');
-        resultsDiv.className = 'analysis-result';
+        const resultSection = document.querySelector('.result-section');
+        resultSection.style.display = 'block';
 
-        // Clear previous results
-        const previousResults = document.getElementById('results');
-        if (previousResults) {
-            previousResults.innerHTML = '';
-        }
+        // 사주 차트 업데이트
+        updateSajuChart(result);
 
-        // Basic information section
-        const basicInfo = document.createElement('div');
-        basicInfo.className = 'analysis-section';
-        basicInfo.innerHTML = `
-            <h3>기본 정보</h3>
-            <div class="analysis-content">
-                ${generateBasicInfoContent(result)}
-            </div>
-        `;
-        resultsDiv.appendChild(basicInfo);
+        // 각 섹션의 내용 업데이트
+        const sections = {
+            'basic-info': generateBasicInfoContent(result),
+            'personality': result.personality || '',
+            'career': result.career || '',
+            'relationships': result.relationships || '',
+            'health': result.health || '',
+            'wealth': result.wealth || '',
+            'luck': result.luck || '',
+            'advice': result.advice || ''
+        };
 
-        // Add results div to the page
-        document.getElementById('results').appendChild(resultsDiv);
+        // 각 섹션에 내용 삽입
+        Object.entries(sections).forEach(([section, content]) => {
+            const sectionElement = document.querySelector(`.${section}-section .analysis-content`);
+            if (sectionElement) {
+                sectionElement.innerHTML = `<dl class="analysis-detail">${content}</dl>`;
+            }
+        });
+
+        // 결과 섹션으로 스크롤
+        resultSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // 사주 차트 업데이트 함수
+    function updateSajuChart(result) {
+        const pillars = ['year', 'month', 'day', 'hour'];
+        pillars.forEach(pillar => {
+            if (result[pillar]) {
+                const pillarElement = document.querySelector(`.${pillar}-pillar`);
+                if (pillarElement) {
+                    pillarElement.querySelector('.heavenly-stem').textContent = result[pillar].stem || '';
+                    pillarElement.querySelector('.earthly-branch').textContent = result[pillar].branch || '';
+                }
+            }
+        });
     }
 
     function generateBasicInfoContent(result) {
