@@ -1555,9 +1555,6 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         const resultSection = document.querySelector('.result-section');
         resultSection.style.display = 'block';
 
-        // 사주 차트 업데이트
-        updateSajuChart(result);
-
         // 각 섹션의 내용 업데이트
         const sections = {
             'basic-info': generateBasicInfoContent(result),
