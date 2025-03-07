@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>재미로 보는 사주</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/input.css">
+    <link rel="stylesheet" href="css/result.css">
 </head>
 <body>
     <div class="container">
@@ -37,35 +38,9 @@
                         <small class="input-help">1부터 31까지 직접 입력해주세요</small>
                     </div>
                     <div class="form-group">
-                        <label for="birthHourType">생시 입력 방식</label>
-                        <select id="birthHourType" name="birthHourType" required>
-                            <option value="24hour">24시간제</option>
-                            <option value="traditional">전통시</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="hour24Input">
-                        <label for="birthHour">24시간제 생시</label>
+                        <label for="birthHour">생시 (24시간제)</label>
                         <input type="number" id="birthHour" name="birthHour" min="0" max="23" required placeholder="예: 14">
-                        <small class="input-help">0-23 사이의 숫자를 직접 입력해주세요 (예: 14는 오후 2시)</small>
-                    </div>
-                    <div class="form-group" id="hourTraditionalInput" style="display: none;">
-                        <label for="birthHourTraditional">전통시 생시</label>
-                        <select id="birthHourTraditional" name="birthHourTraditional">
-                            <option value="">선택하세요</option>
-                            <option value="23">자시 (23:00-01:00)</option>
-                            <option value="1">축시 (01:00-03:00)</option>
-                            <option value="3">인시 (03:00-05:00)</option>
-                            <option value="5">묘시 (05:00-07:00)</option>
-                            <option value="7">진시 (07:00-09:00)</option>
-                            <option value="9">사시 (09:00-11:00)</option>
-                            <option value="11">오시 (11:00-13:00)</option>
-                            <option value="13">미시 (13:00-15:00)</option>
-                            <option value="15">신시 (15:00-17:00)</option>
-                            <option value="17">유시 (17:00-19:00)</option>
-                            <option value="19">술시 (19:00-21:00)</option>
-                            <option value="21">해시 (21:00-23:00)</option>
-                        </select>
-                        <small class="input-help">전통적인 시간 체계로 선택해주세요</small>
+                        <small class="input-help">0-23 사이의 숫자를 직접 입력해주세요 (예: 0은 자정, 14는 오후 2시)</small>
                     </div>
                     <div class="form-group">
                         <label for="isLunar">음력 여부</label>
@@ -86,7 +61,7 @@
                         <label for="location">태어난 지역</label>
                         <input type="text" id="location" name="location" placeholder="예: 서울시 강남구">
                     </div>
-                    <button type="submit">분석하기</button>
+                    <button type="submit">사주 확인하기</button>
                 </form>
             </section>
 
@@ -94,112 +69,98 @@
                 <h2>분석 결과</h2>
                 <div class="saju-chart">
                     <div class="pillar year-pillar">
-                        <span class="heavenly-stem"></span>
-                        <span class="earthly-branch"></span>
+                        <div class="pillar-label">年柱</div>
+                        <div class="heavenly-stem"></div>
+                        <div class="earthly-branch"></div>
                     </div>
                     <div class="pillar month-pillar">
-                        <span class="heavenly-stem"></span>
-                        <span class="earthly-branch"></span>
+                        <div class="pillar-label">月柱</div>
+                        <div class="heavenly-stem"></div>
+                        <div class="earthly-branch"></div>
                     </div>
                     <div class="pillar day-pillar">
-                        <span class="heavenly-stem"></span>
-                        <span class="earthly-branch"></span>
+                        <div class="pillar-label">日柱</div>
+                        <div class="heavenly-stem"></div>
+                        <div class="earthly-branch"></div>
                     </div>
                     <div class="pillar hour-pillar">
-                        <span class="heavenly-stem"></span>
-                        <span class="earthly-branch"></span>
+                        <div class="pillar-label">時柱</div>
+                        <div class="heavenly-stem"></div>
+                        <div class="earthly-branch"></div>
                     </div>
                 </div>
+                
                 <div class="analysis-result">
-                    <h3>사주 풀이</h3>
-                    <p id="basicInfo"></p>
-                    
-                    <h3>천고</h3>
-                    <p id="heavenlyLuck"></p>
-                    
-                    <h3>천역</h3>
-                    <p id="heavenlyDuty"></p>
-                    
-                    <h3>천문</h3>
-                    <p id="heavenlyPattern"></p>
-                    
-                    <h3>천예</h3>
-                    <p id="heavenlyArt"></p>
-                    
-                    <h3>성격 및 기질</h3>
-                    <p id="personality"></p>
-                    
-                    <h3>직업 적성</h3>
-                    <p id="career"></p>
-                    
-                    <h3>건강</h3>
-                    <p id="health"></p>
-                    
-                    <h3>대인관계</h3>
-                    <p id="relationships"></p>
-                    
-                    <h3>연애와 결혼</h3>
-                    <p id="love"></p>
-                    
-                    <h3>재물운</h3>
-                    <p id="wealth"></p>
-                    
-                    <h3>길운</h3>
-                    <p id="luck"></p>
-                    
-                    <h3>조언</h3>
-                    <p id="advice"></p>
-                    
-                    <h3>천격 분석</h3>
-                    <p id="heavenlyPattern"></p>
-                    
-                    <h3>천복 분석</h3>
-                    <p id="heavenlyFortune"></p>
-                    
-                    <h3>천시 분석</h3>
-                    <p id="heavenlyTiming"></p>
-                    
-                    <h3>천수 분석</h3>
-                    <p id="heavenlyLongevity"></p>
-                    
-                    <h3>천재 분석</h3>
-                    <p id="heavenlyTalent"></p>
-                    
-                    <h3>천명 분석</h3>
-                    <p id="heavenlyDestiny"></p>
-                    
-                    <h3>천덕 분석</h3>
-                    <p id="heavenlyVirtue"></p>
-                    
-                    <h3>천요 분석</h3>
-                    <p id="heavenlyWeakness"></p>
-                    
-                    <h3>천인 분석</h3>
-                    <p id="heavenlyAuthority"></p>
-                    
-                    <h3>천부 분석</h3>
-                    <p id="heavenlyGift"></p>
-                    
-                    <h3>천상 분석</h3>
-                    <p id="heavenlyAppearance"></p>
-                    
-                    <h3>천식 분석</h3>
-                    <p id="heavenlySustenance"></p>
-                    
-                    <h3>천귀 분석</h3>
-                    <p id="heavenlyNobility"></p>
-                    
-                    <h3>천살 분석</h3>
-                    <p id="heavenlyObstacle"></p>
-                    
-                    <h3>천권 분석</h3>
-                    <p id="heavenlyPower"></p>
-                    
-                    <h3>천간합 분석</h3>
-                    <p id="heavenlyStemCombination"></p>
-                    
-                    <h3>천간충 분석</h3>
-                    <p id="heavenlyStemConflict"></p>
+                    <div class="basic-info-section">
+                        <h3>기본 정보</h3>
+                        <div id="basicInfo" class="info-content"></div>
+                    </div>
+
+                    <div class="life-stages-section">
+                        <h3>인생시기별 운세</h3>
+                        <div class="analysis-content">
+                            <div class="stage-group">
+                                <h4>초년운 (0~15세)</h4>
+                                <div id="earlyLife" class="stage-content"></div>
+                            </div>
+                            <div class="stage-group">
+                                <h4>청년운 (16~30세)</h4>
+                                <div id="youthLife" class="stage-content"></div>
+                            </div>
+                            <div class="stage-group">
+                                <h4>중년운 (31~45세)</h4>
+                                <div id="middleLife" class="stage-content"></div>
+                            </div>
+                            <div class="stage-group">
+                                <h4>장년운 (46~60세)</h4>
+                                <div id="matureLife" class="stage-content"></div>
+                            </div>
+                            <div class="stage-group">
+                                <h4>노년운 (61세 이후)</h4>
+                                <div id="elderLife" class="stage-content"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="elemental-analysis-section">
+                        <h3>오행 분석</h3>
+                        <div id="elementalAnalysis" class="elemental-chart"></div>
+                    </div>
+
+                    <div class="personality-section">
+                        <h3>성격 분석</h3>
+                        <div id="personality" class="analysis-content"></div>
+                    </div>
+
+                    <div class="career-section">
+                        <h3>적성 직업</h3>
+                        <div id="career" class="analysis-content"></div>
+                    </div>
+
+                    <div class="health-section">
+                        <h3>건강 분석</h3>
+                        <div id="health" class="analysis-content"></div>
+                    </div>
+
+                    <div class="relationships-section">
+                        <h3>대인관계</h3>
+                        <div id="relationships" class="analysis-content"></div>
+                    </div>
+
+                    <div class="wealth-section">
+                        <h3>재물운</h3>
+                        <div id="wealth" class="analysis-content"></div>
+                    </div>
+
+                    <div class="luck-section">
+                        <h3>운세 분석</h3>
+                        <div id="luck" class="analysis-content"></div>
+                    </div>
+
+                    <div class="advice-section">
+                        <h3>조언</h3>
+                        <div id="advice" class="analysis-content"></div>
+                    </div>
                 </div>
             </section>
         </main>
@@ -214,7 +175,6 @@
     <button id="downloadPDF" class="download-pdf" title="PDF 다운로드">📄</button>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="js/heavenlyAnalysis.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html> 

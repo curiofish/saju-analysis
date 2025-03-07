@@ -1,9 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const sajuForm = document.getElementById('sajuForm');
     const resultSection = document.querySelector('.result-section');
-    const birthHourType = document.getElementById('birthHourType');
-    const hour24Input = document.getElementById('hour24Input');
-    const hourTraditionalInput = document.getElementById('hourTraditionalInput');
     const submitButton = document.querySelector('button[type="submit"]');
     const scrollToTopButton = document.getElementById('scrollToTop');
     const downloadPDFButton = document.getElementById('downloadPDF');
@@ -51,21 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 생시 입력 방식 전환
-    birthHourType.addEventListener('change', function() {
-        if (this.value === '24hour') {
-            hour24Input.style.display = 'block';
-            hourTraditionalInput.style.display = 'none';
-            document.getElementById('birthHour').required = true;
-            document.getElementById('birthHourTraditional').required = false;
-        } else {
-            hour24Input.style.display = 'none';
-            hourTraditionalInput.style.display = 'block';
-            document.getElementById('birthHour').required = false;
-            document.getElementById('birthHourTraditional').required = true;
-        }
-    });
-
     // 입력값 검증 함수
     function validateDate(year, month, day) {
         const date = new Date(year, month - 1, day);
@@ -107,14 +89,44 @@ document.addEventListener('DOMContentLoaded', function() {
         return earthlyBranches[(month + 1) % 12];
     }
 
-    // 일 천간 계산 (간단한 버전)
-    function calculateDayStem(day) {
-        return heavenlyStems[day % 10];
+    // 일 천간 계산 (정확한 버전)
+    function calculateDayStem(year, month, day) {
+        // 1900년 1월 1일은 '己亥'일이므로, 이를 기준으로 계산
+        const baseYear = 1900;
+        const baseMonth = 1;
+        const baseDay = 1;
+        const baseStemIndex = 5; // 己는 천간 배열의 5번째
+
+        // 날짜 차이 계산
+        const date1 = new Date(year, month - 1, day);
+        const date2 = new Date(baseYear, baseMonth - 1, baseDay);
+        const diffDays = Math.floor((date1 - date2) / (1000 * 60 * 60 * 24));
+
+        // 천간 인덱스 계산 (음수 처리 포함)
+        let stemIndex = (baseStemIndex + diffDays) % 10;
+        if (stemIndex < 0) stemIndex += 10;
+
+        return heavenlyStems[stemIndex];
     }
 
-    // 일 지지 계산 (간단한 버전)
-    function calculateDayBranch(day) {
-        return earthlyBranches[day % 12];
+    // 일 지지 계산 (정확한 버전)
+    function calculateDayBranch(year, month, day) {
+        // 1900년 1월 1일은 '己亥'일이므로, 이를 기준으로 계산
+        const baseYear = 1900;
+        const baseMonth = 1;
+        const baseDay = 1;
+        const baseBranchIndex = 11; // 亥는 지지 배열의 11번째
+
+        // 날짜 차이 계산
+        const date1 = new Date(year, month - 1, day);
+        const date2 = new Date(baseYear, baseMonth - 1, baseDay);
+        const diffDays = Math.floor((date1 - date2) / (1000 * 60 * 60 * 24));
+
+        // 지지 인덱스 계산 (음수 처리 포함)
+        let branchIndex = (baseBranchIndex + diffDays) % 12;
+        if (branchIndex < 0) branchIndex += 12;
+
+        return earthlyBranches[branchIndex];
     }
 
     // 시간 천간 계산
@@ -147,9 +159,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 element: calculateFiveElement(calculateMonthStem(year, month))
             },
             day: {
-                stem: calculateDayStem(day),
-                branch: calculateDayBranch(day),
-                element: calculateFiveElement(calculateDayStem(day))
+                stem: calculateDayStem(year, month, day),
+                branch: calculateDayBranch(year, month, day),
+                element: calculateFiveElement(calculateDayStem(year, month, day))
             },
             hour: {
                 stem: calculateHourStem(hour),
@@ -161,13 +173,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 오행 분석
     function analyzeFiveElements(saju) {
-        const elements = {};
-        fiveElements.forEach(element => {
-            elements[element] = 0;
+        const elements = {
+            '木': 0,
+            '火': 0,
+            '土': 0,
+            '金': 0,
+            '水': 0
+        };
+
+        // 천간의 오행 분석
+        Object.values(saju).forEach(pillar => {
+            elements[calculateFiveElement(pillar.stem)]++;
         });
 
+        // 지지의 오행 분석
+        const branchElements = {
+            '子': '水',
+            '丑': '土',
+            '寅': '木',
+            '卯': '木',
+            '辰': '土',
+            '巳': '火',
+            '午': '火',
+            '未': '土',
+            '申': '金',
+            '酉': '金',
+            '戌': '土',
+            '亥': '水'
+        };
+
         Object.values(saju).forEach(pillar => {
-            elements[pillar.element]++;
+            elements[branchElements[pillar.branch]] += 0.5;
+        });
+
+        // 결과 정규화
+        const total = Object.values(elements).reduce((a, b) => a + b, 0);
+        Object.keys(elements).forEach(key => {
+            elements[key] = Math.round((elements[key] / total) * 100) / 100;
         });
 
         return elements;
@@ -199,88 +241,6 @@ document.addEventListener('DOMContentLoaded', function() {
             strength: calculateFortuneStrength(elements),
             timing: determineFortuneTiming(saju)
         };
-    }
-
-    // 천격 분석
-    function analyzeHeavenlyPattern(saju) {
-        const stems = Object.values(saju).map(pillar => pillar.stem);
-        const branches = Object.values(saju).map(pillar => pillar.branch);
-        
-        // 천간의 조화 분석
-        const stemHarmony = analyzeStemHarmony(stems);
-        // 지지의 조화 분석
-        const branchHarmony = analyzeBranchHarmony(branches);
-        
-        return {
-            stemHarmony,
-            branchHarmony,
-            overallPattern: determineOverallPattern(stemHarmony, branchHarmony)
-        };
-    }
-
-    // 천간 조화 분석
-    function analyzeStemHarmony(stems) {
-        const combinations = {
-            '甲己': '토합',
-            '乙庚': '금합',
-            '丙辛': '수합',
-            '丁壬': '목합',
-            '戊癸': '화합'
-        };
-        
-        let harmony = [];
-        for (let i = 0; i < stems.length; i++) {
-            for (let j = i + 1; j < stems.length; j++) {
-                const combination = stems[i] + stems[j];
-                if (combinations[combination]) {
-                    harmony.push(combinations[combination]);
-                }
-            }
-        }
-        
-        return harmony;
-    }
-
-    // 지지 조화 분석
-    function analyzeBranchHarmony(branches) {
-        const combinations = {
-            '子丑': '토합',
-            '寅亥': '목합',
-            '卯戌': '화합',
-            '辰酉': '금합',
-            '巳申': '수합',
-            '午未': '화합'
-        };
-        
-        let harmony = [];
-        for (let i = 0; i < branches.length; i++) {
-            for (let j = i + 1; j < branches.length; j++) {
-                const combination = branches[i] + branches[j];
-                if (combinations[combination]) {
-                    harmony.push(combinations[combination]);
-                }
-            }
-        }
-        
-        return harmony;
-    }
-
-    // 전체 패턴 결정
-    function determineOverallPattern(stemHarmony, branchHarmony) {
-        const allHarmony = [...stemHarmony, ...branchHarmony];
-        const elementCounts = {
-            '목합': 0,
-            '화합': 0,
-            '토합': 0,
-            '금합': 0,
-            '수합': 0
-        };
-        
-        allHarmony.forEach(harmony => {
-            elementCounts[harmony]++;
-        });
-        
-        return elementCounts;
     }
 
     // 천시 분석
@@ -366,7 +326,35 @@ document.addEventListener('DOMContentLoaded', function() {
         return timingPatterns[yearStem] || '사계절';
     }
 
-    // 천수 분석
+    // 천수 계산 함수 추가
+    function calculateLongevity(elements) {
+        const total = Object.values(elements).reduce((a, b) => a + b, 0);
+        const maxElement = Math.max(...Object.values(elements));
+        const minElement = Math.min(...Object.values(elements));
+        
+        // 균형도 계산 (0-100)
+        const balance = ((maxElement - minElement) / total) * 100;
+        
+        // 수명 예측 (기본 80세 기준)
+        let baseAge = 80;
+        
+        // 균형도에 따른 수정
+        if (balance > 70) {
+            baseAge -= 10; // 균형이 많이 깨진 경우
+        } else if (balance > 50) {
+            baseAge -= 5; // 약간의 불균형
+        } else if (balance < 20) {
+            baseAge += 5; // 매우 균형 잡힌 경우
+        }
+        
+        return {
+            age: baseAge,
+            balance: 100 - balance,
+            health: balance < 50 ? '양호' : '주의 필요'
+        };
+    }
+
+    // 천수 분석 함수 수정
     function analyzeHeavenlyLongevity(saju) {
         const elements = analyzeFiveElements(saju);
         const healthPatterns = {
@@ -380,11 +368,37 @@ document.addEventListener('DOMContentLoaded', function() {
         const dominantElement = Object.entries(elements)
             .sort(([,a], [,b]) => b - a)[0][0];
         
+        const longevity = calculateLongevity(elements);
+        
         return {
             healthPattern: healthPatterns[dominantElement],
-            longevity: calculateLongevity(elements),
-            healthAdvice: generateHealthAdvice(dominantElement)
+            longevity: longevity,
+            healthAdvice: generateHealthAdvice(dominantElement, longevity)
         };
+    }
+
+    // 건강 조언 생성 함수 추가
+    function generateHealthAdvice(dominantElement, longevity) {
+        const advice = {
+            '木': '간과 담낭 건강에 특히 주의하세요. 스트레스 관리가 중요합니다.',
+            '火': '심장과 소장 건강에 주의하세요. 과도한 열정을 조절하세요.',
+            '土': '위와 비장 건강에 주의하세요. 규칙적인 식사가 중요합니다.',
+            '金': '폐와 대장 건강에 주의하세요. 호흡 운동이 도움이 됩니다.',
+            '水': '신장과 방광 건강에 주의하세요. 충분한 수분 섭취가 중요합니다.'
+        };
+        
+        let baseAdvice = advice[dominantElement];
+        
+        // 균형도에 따른 추가 조언
+        if (longevity.balance < 50) {
+            baseAdvice += ' 오행의 균형이 많이 깨져있어 전반적인 건강 관리가 필요합니다.';
+        } else if (longevity.balance < 70) {
+            baseAdvice += ' 약간의 불균형이 있으니 건강에 더욱 신경 쓰세요.';
+        } else {
+            baseAdvice += ' 오행의 균형이 잘 잡혀있어 건강한 생활이 가능합니다.';
+        }
+        
+        return baseAdvice;
     }
 
     // 천재 분석
@@ -855,102 +869,606 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 기본 정보 생성 함수들
     function generateBasicInfo(dominantElement) {
-        const elementNames = {
-            '木': '목(木)',
-            '火': '화(火)',
-            '土': '토(土)',
-            '金': '금(金)',
-            '水': '수(水)'
+        const elementInfo = {
+            '木': {
+                name: '목(木)',
+                nature: '봄의 기운',
+                characteristics: '성장과 발전',
+                direction: '동쪽',
+                season: '봄',
+                color: '청색/녹색'
+            },
+            '火': {
+                name: '화(火)',
+                nature: '여름의 기운',
+                characteristics: '열정과 확장',
+                direction: '남쪽',
+                season: '여름',
+                color: '적색/주황색'
+            },
+            '土': {
+                name: '토(土)',
+                nature: '중앙의 기운',
+                characteristics: '안정과 조화',
+                direction: '중앙',
+                season: '사계절',
+                color: '황색/갈색'
+            },
+            '金': {
+                name: '금(金)',
+                nature: '가을의 기운',
+                characteristics: '결실과 정의',
+                direction: '서쪽',
+                season: '가을',
+                color: '백색/은색'
+            },
+            '水': {
+                name: '수(水)',
+                nature: '겨울의 기운',
+                characteristics: '지혜와 통찰',
+                direction: '북쪽',
+                season: '겨울',
+                color: '흑색/청색'
+            }
         };
-        return `당신의 사주는 ${elementNames[dominantElement]}가 강한 형상입니다.`;
+
+        const info = elementInfo[dominantElement];
+        return `당신의 사주는 ${info.name}가 가장 강한 형상입니다.
+${info.nature}이 두드러지며, ${info.characteristics}의 기운이 강합니다.
+방위로는 ${info.direction}이 길방이며, ${info.season}에 기운이 가장 왕성합니다.
+${info.color}계열이 당신의 행운의 색이 됩니다.
+이는 당신이 ${info.characteristics}의 성질을 타고났음을 의미합니다.`;
     }
 
     function generatePersonality(dominantElement) {
-        const personalities = {
-            '木': '창의적이고 독립적인 성격으로, 새로운 아이디어를 제시하는 것을 좋아합니다.',
-            '火': '열정적이고 적극적인 성격으로, 리더십이 뛰어납니다.',
-            '土': '안정적이고 신중한 성격으로, 책임감이 강합니다.',
-            '金': '정직하고 원칙적인 성격으로, 완벽을 추구합니다.',
-            '水': '지적이고 통찰력 있는 성격으로, 깊이 있는 사고를 합니다.'
+        const personalityInfo = {
+            '木': {
+                core: '창의적이고 독립적인 성격으로, 새로운 아이디어를 제시하는 것을 좋아합니다.',
+                strength: '혁신적인 사고와 진취적인 태도가 큰 장점입니다.',
+                challenge: '때로는 너무 이상적이거나 고집스러울 수 있습니다.',
+                growth: '안정성과 현실성을 조금 더 고려하면 좋습니다.',
+                potential: '예술적 재능과 창의적 리더십이 잠재되어 있습니다.'
+            },
+            '火': {
+                core: '열정적이고 적극적인 성격으로, 리더십이 뛰어납니다.',
+                strength: '강한 카리스마와 영향력 있는 언변이 특징입니다.',
+                challenge: '감정적 기복이 있을 수 있으며, 때로 성급할 수 있습니다.',
+                growth: '차분함과 인내심을 기르면 더욱 좋습니다.',
+                potential: '타인을 이끌고 영감을 주는 능력이 있습니다.'
+            },
+            '土': {
+                core: '안정적이고 신중한 성격으로, 책임감이 강합니다.',
+                strength: '믿음직하고 성실하며 조직력이 뛰어납니다.',
+                challenge: '변화를 두려워하고 보수적일 수 있습니다.',
+                growth: '새로운 도전에 더 열린 마음을 가지면 좋습니다.',
+                potential: '관리와 조정 능력이 뛰어나며 신뢰를 얻기 쉽습니다.'
+            },
+            '金': {
+                core: '정직하고 원칙적인 성격으로, 완벽을 추구합니다.',
+                strength: '정확하고 체계적이며 분석력이 뛰어납니다.',
+                challenge: '지나친 완벽주의로 스트레스를 받을 수 있습니다.',
+                growth: '유연성을 기르고 실수를 받아들이는 연습이 필요합니다.',
+                potential: '뛰어난 판단력과 정의감으로 신뢰를 얻습니다.'
+            },
+            '水': {
+                core: '지적이고 통찰력 있는 성격으로, 깊이 있는 사고를 합니다.',
+                strength: '높은 지적 능력과 직관력이 돋보입니다.',
+                challenge: '때로는 너무 깊이 생각하여 결정을 미룰 수 있습니다.',
+                growth: '실천력과 결단력을 기르면 더욱 좋습니다.',
+                potential: '학문적 성취와 창의적 문제 해결 능력이 뛰어납니다.'
+            }
         };
-        return personalities[dominantElement];
+
+        const info = personalityInfo[dominantElement];
+        return Object.values(info).join('\n');
     }
 
     function generateCareer(dominantElement) {
-        const careers = {
-            '木': '예술, 디자인, 교육, 창의적 분야',
-            '火': '경영, 영업, 마케팅, 리더십 분야',
-            '土': '행정, 서비스, 관리, 안정적 분야',
-            '金': '법률, 금융, 회계, 규율 분야',
-            '水': '연구, 분석, 컨설팅, 지적 분야'
+        const careerInfo = {
+            '木': {
+                suitable: '예술, 디자인, 교육, 창의적 분야가 적성에 잘 맞습니다.',
+                detail: '특히 창의력을 필요로 하는 직업이 추천됩니다.',
+                examples: '디자이너, 교사, 작가, 건축가, 환경 컨설턴트 등이 유망합니다.',
+                timing: '오전 시간대에 업무 효율이 가장 높습니다.',
+                advice: '자유로운 업무 환경에서 능력을 최대한 발휘할 수 있습니다.'
+            },
+            '火': {
+                suitable: '경영, 영업, 마케팅, 리더십 분야가 적성에 잘 맞습니다.',
+                detail: '사람들과 소통하고 이끄는 직업이 추천됩니다.',
+                examples: 'CEO, 영업관리자, 마케팅 디렉터, 연예인, 정치인 등이 유망합니다.',
+                timing: '오후 시간대에 업무 효율이 가장 높습니다.',
+                advice: '활동적이고 역동적인 환경에서 최고의 성과를 낼 수 있습니다.'
+            },
+            '土': {
+                suitable: '행정, 서비스, 관리, 부동산 분야가 적성에 잘 맞습니다.',
+                detail: '안정적이고 체계적인 직업이 추천됩니다.',
+                examples: '공무원, 부동산 전문가, 프로젝트 매니저, 보험설계사 등이 유망합니다.',
+                timing: '규칙적인 업무 시간에 효율이 가장 높습니다.',
+                advice: '안정적이고 체계적인 환경에서 능력을 발휘할 수 있습니다.'
+            },
+            '金': {
+                suitable: '법률, 금융, 회계, IT 분야가 적성에 잘 맞습니다.',
+                detail: '정확성과 분석력을 필요로 하는 직업이 추천됩니다.',
+                examples: '변호사, 회계사, 금융분석가, 프로그래머 등이 유망합니다.',
+                timing: '이른 아침 시간대에 업무 효율이 가장 높습니다.',
+                advice: '체계적이고 전문적인 환경에서 최고의 성과를 낼 수 있습니다.'
+            },
+            '水': {
+                suitable: '연구, 분석, 컨설팅, 의료 분야가 적성에 잘 맞습니다.',
+                detail: '깊이 있는 전문성을 필요로 하는 직업이 추천됩니다.',
+                examples: '연구원, 의사, 심리상담사, 투자분석가 등이 유망합니다.',
+                timing: '늦은 저녁 시간대에 업무 효율이 가장 높습니다.',
+                advice: '독립적이고 전문적인 환경에서 능력을 발휘할 수 있습니다.'
+            }
         };
-        return careers[dominantElement];
+
+        const info = careerInfo[dominantElement];
+        return Object.values(info).join('\n');
     }
 
     function generateHealth(dominantElement) {
-        const health = {
-            '木': '간, 담낭, 근육, 관절',
-            '火': '심장, 소장, 혈액순환',
-            '土': '위, 비장, 소화기관',
-            '金': '폐, 대장, 호흡기관',
-            '水': '신장, 방광, 내분비계'
+        const healthInfo = {
+            '木': {
+                organs: '간, 담낭, 근육, 관절과 특히 관련이 있습니다.',
+                strengths: '빠른 회복력과 유연성이 장점입니다.',
+                weaknesses: '스트레스에 민감하고 근육 긴장이 있을 수 있습니다.',
+                exercise: '요가, 스트레칭, 등산이 건강에 도움이 됩니다.',
+                advice: '규칙적인 운동과 충분한 휴식이 필요합니다.'
+            },
+            '火': {
+                organs: '심장, 소장, 혈액순환과 특히 관련이 있습니다.',
+                strengths: '높은 에너지와 활력이 장점입니다.',
+                weaknesses: '혈압과 심장 관련 주의가 필요할 수 있습니다.',
+                exercise: '유산소 운동, 수영, 달리기가 건강에 도움이 됩니다.',
+                advice: '과로를 피하고 적절한 운동이 필요합니다.'
+            },
+            '土': {
+                organs: '위, 비장, 소화기관과 특히 관련이 있습니다.',
+                strengths: '안정적인 신진대사가 장점입니다.',
+                weaknesses: '소화 기능이 약할 수 있습니다.',
+                exercise: '가벼운 산책, 태극권이 건강에 도움이 됩니다.',
+                advice: '규칙적인 식사와 적절한 영양 섭취가 중요합니다.'
+            },
+            '金': {
+                organs: '폐, 대장, 호흡기관과 특히 관련이 있습니다.',
+                strengths: '강한 면역력이 장점입니다.',
+                weaknesses: '호흡기 질환에 주의가 필요할 수 있습니다.',
+                exercise: '호흡 운동, 걷기가 건강에 도움이 됩니다.',
+                advice: '깨끗한 공기와 규칙적인 운동이 필요합니다.'
+            },
+            '水': {
+                organs: '신장, 방광, 내분비계와 특히 관련이 있습니다.',
+                strengths: '적응력과 회복력이 장점입니다.',
+                weaknesses: '신장 기능과 수분 균형에 주의가 필요할 수 있습니다.',
+                exercise: '수영, 요가가 건강에 도움이 됩니다.',
+                advice: '충분한 수분 섭취와 적절한 휴식이 중요합니다.'
+            }
         };
-        return health[dominantElement];
+
+        const info = healthInfo[dominantElement];
+        return Object.values(info).join('\n');
     }
 
     function generateRelationships(dominantElement) {
-        const relationships = {
-            '木': '독립적이고 창의적인 관계를 추구합니다.',
-            '火': '열정적이고 적극적인 관계를 추구합니다.',
-            '土': '안정적이고 신뢰감 있는 관계를 추구합니다.',
-            '金': '정직하고 원칙적인 관계를 추구합니다.',
-            '水': '지적이고 깊이 있는 관계를 추구합니다.'
+        const relationshipInfo = {
+            '木': {
+                style: '독립적이고 창의적인 관계를 추구합니다.',
+                strength: '새로운 아이디어와 활동을 통해 관계를 발전시킵니다.',
+                challenge: '때로는 너무 독립적이어서 상대방을 소외시킬 수 있습니다.',
+                ideal: '자유로운 소통과 성장이 가능한 관계가 이상적입니다.',
+                advice: '상대방의 안정성 욕구도 고려해야 합니다.'
+            },
+            '火': {
+                style: '열정적이고 적극적인 관계를 추구합니다.',
+                strength: '강한 카리스마로 관계를 리드합니다.',
+                challenge: '때로는 너무 강렬해서 상대방을 부담스럽게 할 수 있습니다.',
+                ideal: '활동적이고 자극이 있는 관계가 이상적입니다.',
+                advice: '상대방의 페이스도 존중해야 합니다.'
+            },
+            '土': {
+                style: '안정적이고 신뢰감 있는 관계를 추구합니다.',
+                strength: '믿음직하고 책임감 있는 태도로 관계를 유지합니다.',
+                challenge: '때로는 너무 보수적이어서 관계가 정체될 수 있습니다.',
+                ideal: '상호 신뢰와 안정감이 있는 관계가 이상적입니다.',
+                advice: '새로운 경험도 함께 시도해보세요.'
+            },
+            '金': {
+                style: '정직하고 원칙적인 관계를 추구합니다.',
+                strength: '명확한 의사소통으로 관계를 발전시킵니다.',
+                challenge: '때로는 너무 완벽주의적이어서 관계가 경직될 수 있습니다.',
+                ideal: '서로 존중하고 이해하는 관계가 이상적입니다.',
+                advice: '때로는 유연한 태도도 필요합니다.'
+            },
+            '水': {
+                style: '지적이고 깊이 있는 관계를 추구합니다.',
+                strength: '깊은 이해와 통찰로 관계를 발전시킵니다.',
+                challenge: '때로는 너무 분석적이어서 감정적 교류가 부족할 수 있습니다.',
+                ideal: '지적 교류와 정서적 교감이 균형 잡힌 관계가 이상적입니다.',
+                advice: '감정적 표현도 중요합니다.'
+            }
         };
-        return relationships[dominantElement];
-    }
 
-    function generateLove(dominantElement) {
-        const love = {
-            '木': '자유롭고 창의적인 연애를 추구합니다.',
-            '火': '열정적이고 적극적인 연애를 추구합니다.',
-            '土': '안정적이고 신뢰감 있는 연애를 추구합니다.',
-            '金': '정직하고 원칙적인 연애를 추구합니다.',
-            '水': '지적이고 깊이 있는 연애를 추구합니다.'
-        };
-        return love[dominantElement];
+        const info = relationshipInfo[dominantElement];
+        return Object.values(info).join('\n');
     }
 
     function generateWealth(dominantElement) {
-        const wealth = {
-            '木': '창의적인 방법으로 재물을 얻습니다.',
-            '火': '열정적인 노력으로 재물을 얻습니다.',
-            '土': '안정적인 방법으로 재물을 얻습니다.',
-            '金': '체계적인 방법으로 재물을 얻습니다.',
-            '水': '지적 능력으로 재물을 얻습니다.'
+        const wealthInfo = {
+            '木': {
+                tendency: '창의적인 방법으로 재물을 얻는 경향이 있습니다.',
+                strength: '새로운 기회를 잘 포착하고 도전적인 투자를 선호합니다.',
+                timing: '봄철과 아침 시간대에 재물운이 강합니다.',
+                advice: '안정적인 저축도 함께 고려해야 합니다.',
+                potential: '창업과 프리랜서 활동에서 높은 수익이 기대됩니다.'
+            },
+            '火': {
+                tendency: '열정적인 활동을 통해 재물을 얻는 경향이 있습니다.',
+                strength: '리더십과 인맥을 통한 수익 창출이 뛰어납니다.',
+                timing: '여름철과 낮 시간대에 재물운이 강합니다.',
+                advice: '충동적인 지출을 조심해야 합니다.',
+                potential: '영업과 마케팅 분야에서 높은 수익이 기대됩니다.'
+            },
+            '土': {
+                tendency: '안정적인 방법으로 재물을 얻는 경향이 있습니다.',
+                strength: '꾸준한 저축과 투자로 재산을 불립니다.',
+                timing: '사계절 모두 안정적인 재물운이 있습니다.',
+                advice: '너무 보수적인 투자는 피해야 합니다.',
+                potential: '부동산과 안정적인 사업에서 높은 수익이 기대됩니다.'
+            },
+            '金': {
+                tendency: '체계적인 방법으로 재물을 얻는 경향이 있습니다.',
+                strength: '정확한 분석과 계획적인 투자가 특징입니다.',
+                timing: '가을철과 저녁 시간대에 재물운이 강합니다.',
+                advice: '과도한 절약은 피해야 합니다.',
+                potential: '금융과 투자 분야에서 높은 수익이 기대됩니다.'
+            },
+            '水': {
+                tendency: '지적 능력으로 재물을 얻는 경향이 있습니다.',
+                strength: '깊은 통찰력으로 투자 기회를 포착합니다.',
+                timing: '겨울철과 밤 시간대에 재물운이 강합니다.',
+                advice: '너무 신중한 결정은 피해야 합니다.',
+                potential: '연구개발과 컨설팅 분야에서 높은 수익이 기대됩니다.'
+            }
         };
-        return wealth[dominantElement];
+
+        const info = wealthInfo[dominantElement];
+        return Object.values(info).join('\n');
     }
 
     function generateLuck(dominantElement) {
-        const luck = {
-            '木': '창의적인 기회가 찾아옵니다.',
-            '火': '열정적인 기회가 찾아옵니다.',
-            '土': '안정적인 기회가 찾아옵니다.',
-            '金': '체계적인 기회가 찾아옵니다.',
-            '水': '지적 기회가 찾아옵니다.'
+        const luckInfo = {
+            '木': {
+                general: '창의적인 도전과 새로운 시작에서 행운이 따릅니다.',
+                timing: '봄철과 동쪽 방향에서 특히 좋은 기운을 받습니다.',
+                colors: '초록색과 청색 계열이 행운의 색입니다.',
+                numbers: '3, 8이 행운의 숫자입니다.',
+                advice: '새로운 시도와 도전을 두려워하지 마세요.'
+            },
+            '火': {
+                general: '열정적인 활동과 사교적인 만남에서 행운이 따릅니다.',
+                timing: '여름철과 남쪽 방향에서 특히 좋은 기운을 받습니다.',
+                colors: '빨간색과 주황색 계열이 행운의 색입니다.',
+                numbers: '2, 7이 행운의 숫자입니다.',
+                advice: '적극적인 사회활동이 행운을 가져올 것입니다.'
+            },
+            '土': {
+                general: '안정적인 계획과 꾸준한 노력에서 행운이 따릅니다.',
+                timing: '사계절 모두 중앙에서 좋은 기운을 받습니다.',
+                colors: '노란색과 갈색 계열이 행운의 색입니다.',
+                numbers: '5, 10이 행운의 숫자입니다.',
+                advice: '차분하고 안정적인 접근이 행운을 가져올 것입니다.'
+            },
+            '金': {
+                general: '정확한 판단과 체계적인 접근에서 행운이 따릅니다.',
+                timing: '가을철과 서쪽 방향에서 특히 좋은 기운을 받습니다.',
+                colors: '흰색과 금색 계열이 행운의 색입니다.',
+                numbers: '4, 9가 행운의 숫자입니다.',
+                advice: '원칙을 지키는 것이 행운을 가져올 것입니다.'
+            },
+            '水': {
+                general: '지적 탐구와 직관적 판단에서 행운이 따릅니다.',
+                timing: '겨울철과 북쪽 방향에서 특히 좋은 기운을 받습니다.',
+                colors: '검은색과 남색 계열이 행운의 색입니다.',
+                numbers: '1, 6이 행운의 숫자입니다.',
+                advice: '깊이 있는 통찰이 행운을 가져올 것입니다.'
+            }
         };
-        return luck[dominantElement];
+
+        const info = luckInfo[dominantElement];
+        return Object.values(info).join('\n');
     }
 
     function generateAdvice(dominantElement) {
-        const advice = {
-            '木': '창의성을 더욱 발전시키고, 안정성도 함께 추구하세요.',
-            '火': '열정을 조절하고, 신중함도 함께 가지세요.',
-            '土': '안정성을 유지하면서도 새로운 도전을 시도하세요.',
-            '金': '원칙을 지키되, 유연한 사고도 함께 하세요.',
-            '水': '지적 탐구를 하되, 실천적인 면도 고려하세요.'
+        const adviceInfo = {
+            '木': {
+                core: '창의성을 더욱 발전시키고, 안정성도 함께 추구하세요.',
+                life: '새로운 도전을 두려워하지 말되, 기본적인 안정성은 유지하세요.',
+                relationship: '독립성을 유지하면서도 타인과의 조화를 이루세요.',
+                career: '창의적인 분야에서 자신의 재능을 발휘하세요.',
+                health: '규칙적인 운동과 충분한 휴식이 필요합니다.'
+            },
+            '火': {
+                core: '열정을 조절하고, 신중함도 함께 가지세요.',
+                life: '활동적인 생활을 즐기되, 과도한 소진은 피하세요.',
+                relationship: '리더십을 발휘하면서도 배려심을 잃지 마세요.',
+                career: '대인관계를 활용한 직업에서 성공할 수 있습니다.',
+                health: '과로를 피하고 적절한 휴식을 취하세요.'
+            },
+            '土': {
+                core: '안정성을 유지하면서도 새로운 도전을 시도하세요.',
+                life: '기본에 충실하되, 변화를 두려워하지 마세요.',
+                relationship: '신뢰를 바탕으로 하되, 새로운 인연도 만드세요.',
+                career: '안정적인 직업에서 시작하여 점진적으로 발전하세요.',
+                health: '규칙적인 생활습관을 유지하세요.'
+            },
+            '金': {
+                core: '원칙을 지키되, 유연한 사고도 함께 하세요.',
+                life: '완벽을 추구하되, 실수도 받아들이세요.',
+                relationship: '정직함을 유지하면서도 포용력을 키우세요.',
+                career: '전문성을 키우되, 다양한 경험도 쌓으세요.',
+                health: '정신적 스트레스 관리에 신경 쓰세요.'
+            },
+            '水': {
+                core: '지적 탐구를 하되, 실천적인 면도 고려하세요.',
+                life: '깊이 있는 사고와 함께 행동력도 키우세요.',
+                relationship: '이해심을 가지고 적극적으로 소통하세요.',
+                career: '전문성을 바탕으로 실용적인 접근을 하세요.',
+                health: '충분한 휴식과 규칙적인 운동이 필요합니다.'
+            }
         };
-        return advice[dominantElement];
+
+        const info = adviceInfo[dominantElement];
+        return Object.values(info).join('\n');
+    }
+
+    // 인생시기별 운세 생성 함수
+    function generateLifeStages(dominantElement) {
+        const stageInfo = {
+            '木': {
+                early: {
+                    education: '창의적인 교육환경이 중요한 시기입니다.',
+                    growth: '자유로운 성장과 발달이 두드러집니다.',
+                    family: '가족과의 활동적인 관계가 형성됩니다.',
+                    talent: '예술적 재능이 일찍 발견될 수 있습니다.',
+                    advice: '다양한 경험을 할 수 있는 기회를 제공하세요.',
+                    challenge: '규칙과 질서를 배우는 것이 필요합니다.',
+                    potential: '창의적 잠재력이 크게 발현되는 시기입니다.'
+                },
+                youth: {
+                    study: '자기주도적 학습이 효과적입니다.',
+                    career: '창의적 분야로의 진로가 유망합니다.',
+                    love: '자유로운 연애 스타일이 예상됩니다.',
+                    growth: '독창적인 아이디어로 주목받을 수 있습니다.',
+                    challenge: '안정성과 현실성을 고려해야 합니다.',
+                    opportunity: '새로운 도전의 기회가 많습니다.',
+                    advice: '열정을 실용적으로 활용하세요.'
+                },
+                middle: {
+                    career: '창의적 리더십이 발휘되는 시기입니다.',
+                    family: '가정에서 혁신적인 변화가 있습니다.',
+                    wealth: '독창적인 수입원이 생길 수 있습니다.',
+                    growth: '사회적 영향력이 확대됩니다.',
+                    challenge: '안정성과 균형이 필요합니다.',
+                    opportunity: '새로운 사업 기회가 있습니다.',
+                    advice: '위험과 기회를 잘 판단하세요.'
+                },
+                mature: {
+                    achievement: '창의적 업적이 인정받는 시기입니다.',
+                    social: '사회적 공헌도가 높아집니다.',
+                    health: '유연성 운동이 중요합니다.',
+                    family: '자녀의 독립을 지원하게 됩니다.',
+                    challenge: '건강관리가 필요합니다.',
+                    opportunity: '멘토링 기회가 많아집니다.',
+                    advice: '경험을 나누는 것이 중요합니다.'
+                },
+                elder: {
+                    retirement: '창의적인 여가 활동이 중요합니다.',
+                    health: '규칙적인 운동이 필수적입니다.',
+                    hobby: '예술적 취미 활동이 좋습니다.',
+                    wisdom: '후학 양성에 도움을 줄 수 있습니다.',
+                    challenge: '건강관리가 최우선입니다.',
+                    opportunity: '새로운 배움의 기회가 있습니다.',
+                    advice: '경험을 다음 세대에 전수하세요.'
+                }
+            },
+            '火': {
+                early: {
+                    education: '적극적인 교육 참여가 특징입니다.',
+                    growth: '활발한 성장과 발달을 보입니다.',
+                    family: '가족의 사랑과 관심이 많습니다.',
+                    talent: '리더십 재능이 일찍 나타납니다.',
+                    advice: '에너지를 긍정적으로 발산하게 하세요.',
+                    challenge: '감정 조절이 필요할 수 있습니다.',
+                    potential: '강한 카리스마가 발현되는 시기입니다.'
+                },
+                youth: {
+                    study: '실천적 학습이 효과적입니다.',
+                    career: '대인관계 분야가 유망합니다.',
+                    love: '열정적인 연애가 예상됩니다.',
+                    growth: '리더십 역량이 발전합니다.',
+                    challenge: '충동성을 조절해야 합니다.',
+                    opportunity: '인맥 형성의 기회가 많습니다.',
+                    advice: '네트워크 형성에 집중하세요.'
+                },
+                middle: {
+                    career: '리더십이 절정에 달하는 시기입니다.',
+                    family: '가정의 화목이 중요해집니다.',
+                    wealth: '사업적 성과가 두드러집니다.',
+                    growth: '조직 내 영향력이 커집니다.',
+                    challenge: '일과 가정의 균형이 필요합니다.',
+                    opportunity: '승진이나 발전 기회가 많습니다.',
+                    advice: '책임감 있는 결정이 중요합니다.'
+                },
+                mature: {
+                    achievement: '사회적 성취가 정점을 찍습니다.',
+                    social: '존경받는 위치에 오릅니다.',
+                    health: '스트레스 관리가 중요합니다.',
+                    family: '가족 관계가 더욱 돈독해집니다.',
+                    challenge: '과로를 조심해야 합니다.',
+                    opportunity: '지도자 역할의 기회가 많습니다.',
+                    advice: '건강과 성취의 균형을 찾으세요.'
+                },
+                elder: {
+                    retirement: '활동적인 노후가 예상됩니다.',
+                    health: '적절한 운동이 필요합니다.',
+                    hobby: '사회활동 참여가 활발합니다.',
+                    wisdom: '후배 양성에 열정을 보입니다.',
+                    challenge: '과도한 활동을 조심하세요.',
+                    opportunity: '사회공헌 활동이 많아집니다.',
+                    advice: '건강한 열정을 유지하세요.'
+                }
+            },
+            '土': {
+                early: {
+                    education: '체계적인 교육이 효과적입니다.',
+                    growth: '안정적인 성장을 보입니다.',
+                    family: '가족과의 유대가 매우 중요합니다.',
+                    talent: '실용적인 재능이 돋보입니다.',
+                    advice: '기본기를 잘 다지도록 하세요.',
+                    challenge: '변화를 두려워할 수 있습니다.',
+                    potential: '안정적인 성장이 기대되는 시기입니다.'
+                },
+                youth: {
+                    study: '체계적인 학습이 중요합니다.',
+                    career: '안정적인 직종이 유망합니다.',
+                    love: '신중한 연애가 예상됩니다.',
+                    growth: '책임감이 발달합니다.',
+                    challenge: '융통성이 필요할 수 있습니다.',
+                    opportunity: '전문성 개발의 기회가 많습니다.',
+                    advice: '기초를 탄탄히 다지세요.'
+                },
+                middle: {
+                    career: '전문성이 인정받는 시기입니다.',
+                    family: '가정의 안정이 최고조에 달합니다.',
+                    wealth: '재산이 안정적으로 증가합니다.',
+                    growth: '사회적 신뢰도가 높아집니다.',
+                    challenge: '혁신의 필요성을 느낍니다.',
+                    opportunity: '자산 증식의 기회가 많습니다.',
+                    advice: '안정 속 혁신을 추구하세요.'
+                },
+                mature: {
+                    achievement: '전문가로서 인정받습니다.',
+                    social: '신뢰할 수 있는 조언자가 됩니다.',
+                    health: '규칙적인 생활이 중요합니다.',
+                    family: '가족의 중심 역할을 합니다.',
+                    challenge: '변화 수용이 필요합니다.',
+                    opportunity: '자문역할의 기회가 많습니다.',
+                    advice: '경험을 바탕으로 조언하세요.'
+                },
+                elder: {
+                    retirement: '안정적인 노후가 예상됩니다.',
+                    health: '규칙적인 생활이 핵심입니다.',
+                    hobby: '원예나 독서가 좋습니다.',
+                    wisdom: '신뢰받는 조언자 역할을 합니다.',
+                    challenge: '고집을 내려놓아야 합니다.',
+                    opportunity: '전문 자문 역할이 많아집니다.',
+                    advice: '경험과 지식을 공유하세요.'
+                }
+            },
+            '金': {
+                early: {
+                    education: '논리적인 교육이 효과적입니다.',
+                    growth: '정확하고 체계적인 성장을 보입니다.',
+                    family: '원칙이 있는 가정교육이 중요합니다.',
+                    talent: '분석적 재능이 돋보입니다.',
+                    advice: '규율과 원칙을 가르치세요.',
+                    challenge: '감정 표현이 부족할 수 있습니다.',
+                    potential: '뛰어난 판단력이 발현되는 시기입니다.'
+                },
+                youth: {
+                    study: '분석적 학습이 효과적입니다.',
+                    career: '전문직이 유망합니다.',
+                    love: '이성적인 연애가 예상됩니다.',
+                    growth: '전문성이 발달합니다.',
+                    challenge: '감정 교류가 필요합니다.',
+                    opportunity: '자격증 취득의 기회가 많습니다.',
+                    advice: '전문성 개발에 집중하세요.'
+                },
+                middle: {
+                    career: '전문성이 절정에 달합니다.',
+                    family: '가정의 원칙이 확립됩니다.',
+                    wealth: '계획적인 재산 증식이 있습니다.',
+                    growth: '사회적 권위가 생깁니다.',
+                    challenge: '유연성이 필요합니다.',
+                    opportunity: '전문직 발전의 기회가 많습니다.',
+                    advice: '원칙과 유연성을 조화시키세요.'
+                },
+                mature: {
+                    achievement: '전문가로서 최고조에 달합니다.',
+                    social: '권위있는 위치에 오릅니다.',
+                    health: '정기적인 검진이 중요합니다.',
+                    family: '자녀의 성공을 지원합니다.',
+                    challenge: '고집을 줄여야 합니다.',
+                    opportunity: '자문위원 역할이 많아집니다.',
+                    advice: '지식을 나누는 것이 중요합니다.'
+                },
+                elder: {
+                    retirement: '체계적인 노후가 예상됩니다.',
+                    health: '정기적인 관리가 필요합니다.',
+                    hobby: '수집이나 연구가 좋습니다.',
+                    wisdom: '전문적인 조언자가 됩니다.',
+                    challenge: '고집을 내려놓아야 합니다.',
+                    opportunity: '전문 자문 역할이 많아집니다.',
+                    advice: '경험과 지식을 공유하세요.'
+                }
+            },
+            '水': {
+                early: {
+                    education: '창의적이고 자유로운 교육이 좋습니다.',
+                    growth: '지적 호기심이 왕성합니다.',
+                    family: '지적 자극이 있는 가정환경이 중요합니다.',
+                    talent: '학구적 재능이 일찍 나타납니다.',
+                    advice: '호기심을 자유롭게 발산하게 하세요.',
+                    challenge: '실천력이 부족할 수 있습니다.',
+                    potential: '지적 성장이 두드러지는 시기입니다.'
+                },
+                youth: {
+                    study: '탐구적 학습이 효과적입니다.',
+                    career: '연구직이 유망합니다.',
+                    love: '지적인 교류가 중요합니다.',
+                    growth: '학문적 성취가 있습니다.',
+                    challenge: '현실감이 필요합니다.',
+                    opportunity: '학술적 성과의 기회가 많습니다.',
+                    advice: '이론과 실천을 병행하세요.'
+                },
+                middle: {
+                    career: '연구 성과가 돋보이는 시기입니다.',
+                    family: '자녀 교육에 영향력이 큽니다.',
+                    wealth: '지적 재산권으로 수익이 생깁니다.',
+                    growth: '학문적 성취가 높아집니다.',
+                    challenge: '현실적 판단이 필요합니다.',
+                    opportunity: '연구 개발의 기회가 많습니다.',
+                    advice: '지식의 실용화가 중요합니다.'
+                },
+                mature: {
+                    achievement: '학문적 성과가 정점을 찍습니다.',
+                    social: '지적 권위자로 인정받습니다.',
+                    health: '정신 건강이 중요합니다.',
+                    family: '가족의 정신적 지주가 됩니다.',
+                    challenge: '현실과의 균형이 필요합니다.',
+                    opportunity: '교육자 역할이 많아집니다.',
+                    advice: '지혜를 나누는 것이 중요합니다.'
+                },
+                elder: {
+                    retirement: '지적 활동이 활발한 노후가 예상됩니다.',
+                    health: '마음의 평화가 중요합니다.',
+                    hobby: '독서와 연구가 좋습니다.',
+                    wisdom: '지혜로운 스승 역할을 합니다.',
+                    challenge: '현실적 생활이 필요합니다.',
+                    opportunity: '교육 멘토 역할이 많아집니다.',
+                    advice: '지혜를 후대에 전수하세요.'
+                }
+            }
+        };
+
+        const info = stageInfo[dominantElement];
+        return {
+            earlyLife: Object.values(info.early).join('\n'),
+            youthLife: Object.values(info.youth).join('\n'),
+            middleLife: Object.values(info.middle).join('\n'),
+            matureLife: Object.values(info.mature).join('\n'),
+            elderLife: Object.values(info.elder).join('\n')
+        };
     }
 
     // 결과 분석
@@ -958,387 +1476,231 @@ document.addEventListener('DOMContentLoaded', function() {
         const dominantElement = Object.entries(elements)
             .sort(([,a], [,b]) => b - a)[0][0];
 
-        // 기존 분석 결과
+        // 기본 분석 결과
         const basicAnalysis = {
             basicInfo: generateBasicInfo(dominantElement),
+            lifeStages: generateLifeStages(dominantElement),
             personality: generatePersonality(dominantElement),
             career: generateCareer(dominantElement),
             health: generateHealth(dominantElement),
             relationships: generateRelationships(dominantElement),
-            love: generateLove(dominantElement),
             wealth: generateWealth(dominantElement),
             luck: generateLuck(dominantElement),
             advice: generateAdvice(dominantElement)
         };
 
-        // 새로운 천(天) 관련 분석 추가
-        const heavenlyAnalysis = {
-            pattern: analyzeHeavenlyPattern(saju),
+        // 운세 관련 분석
+        const fortuneAnalysis = {
             fortune: analyzeHeavenlyFortune(saju),
             timing: analyzeHeavenlyTiming(saju),
             longevity: analyzeHeavenlyLongevity(saju),
-            talent: analyzeHeavenlyTalent(saju),
-            destiny: analyzeHeavenlyDestiny(saju),
-            virtue: analyzeHeavenlyVirtue(saju),
-            weakness: analyzeHeavenlyWeakness(saju),
-            authority: analyzeHeavenlyAuthority(saju),
-            gift: analyzeHeavenlyGift(saju),
-            appearance: analyzeHeavenlyAppearance(saju),
-            sustenance: analyzeHeavenlySustenance(saju),
-            nobility: analyzeHeavenlyNobility(saju),
-            obstacle: analyzeHeavenlyObstacle(saju),
-            power: analyzeHeavenlyPower(saju),
-            stemCombination: analyzeHeavenlyStemCombination(saju),
-            stemConflict: analyzeHeavenlyStemConflict(saju)
+            talent: analyzeHeavenlyTalent(saju)
+        };
+
+        // 사주 데이터
+        const sajuData = {
+            year: saju.year,
+            month: saju.month,
+            day: saju.day,
+            hour: saju.hour
         };
 
         return {
+            ...sajuData,
             ...basicAnalysis,
-            ...heavenlyAnalysis
+            ...fortuneAnalysis,
+            elements: elements
         };
     }
 
+    // 시간 변환 및 검증 함수
+    function validateAndConvertHour(hour) {
+        if (!hour || hour.trim() === '') {
+            throw new Error('시간을 입력해주세요.');
+        }
+
+        const hourNum = parseInt(hour);
+        if (isNaN(hourNum) || hourNum < 0 || hourNum > 23) {
+            throw new Error('올바른 시간을 입력해주세요 (0-23).');
+        }
+        return hourNum;
+    }
+
+    // 폼 제출 이벤트 핸들러 수정
     sajuForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         setLoading(true);
 
         try {
             // 입력값 가져오기
+            const name = document.getElementById('name').value;
             const year = parseInt(document.getElementById('birthYear').value);
             const month = parseInt(document.getElementById('birthMonth').value);
             const day = parseInt(document.getElementById('birthDay').value);
-            let hour;
-
-            // 생시 입력 방식에 따라 시간 가져오기
-            if (birthHourType.value === '24hour') {
-                hour = parseInt(document.getElementById('birthHour').value);
-            } else {
-                hour = parseInt(document.getElementById('birthHourTraditional').value);
-            }
-
-            // 입력값 검증
-            if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hour)) {
-                throw new Error('모든 필드를 입력해주세요.');
-            }
+            const isLunar = document.getElementById('isLunar').checked;
+            
+            // 시간 입력 처리 - 24시간제만 사용
+            const hourInput = document.getElementById('birthHour').value;
+            const hour = validateAndConvertHour(hourInput);
 
             // 날짜 유효성 검사
             if (!validateDate(year, month, day)) {
-                throw new Error('올바른 날짜를 입력해주세요.');
+                throw new Error('유효하지 않은 날짜입니다.');
             }
 
-            // 시간 유효성 검사
-            if (hour < 0 || hour > 23) {
-                throw new Error('올바른 시간을 입력해주세요 (0-23).');
-            }
-
-            // 연도 범위 검사
-            if (year < 1900 || year > 2100) {
-                throw new Error('연도는 1900년부터 2100년 사이여야 합니다.');
+            // 음력일 경우 양력으로 변환 (추후 구현)
+            let solarDate = { year, month, day };
+            if (isLunar) {
+                // TODO: 음력을 양력으로 변환하는 로직 구현
+                console.warn('음력 변환은 아직 구현되지 않았습니다.');
             }
 
             // 사주 계산
-            const saju = calculateSaju(year, month, day, hour);
+            const saju = calculateSaju(solarDate.year, solarDate.month, solarDate.day, hour);
             const elements = analyzeFiveElements(saju);
-            const analysisResult = analyzeResult(saju, elements);
+            const result = analyzeResult(saju, elements);
 
             // 결과 표시
-            displayResults(saju, analysisResult);
-            resultSection.style.display = 'block';
-            resultSection.scrollIntoView({ behavior: 'smooth' });
-
-            // 기본 정보 표시
-            const name = document.getElementById('name').value;
-            const gender = document.getElementById('gender').value;
-            const isLunar = document.getElementById('isLunar').value === 'yes';
-            const location = document.getElementById('location').value;
-            document.getElementById('basicInfo').textContent = `이름: ${name}\n생년월일시: ${year}년 ${month}월 ${day}일 ${hour}시\n성별: ${gender === 'male' ? '남성' : '여성'}\n음력: ${isLunar ? '예' : '아니오'}\n태어난 지역: ${location || '미입력'}`;
+            displayResults(result);
             
-            // 천고 표시
-            document.getElementById('heavenlyLuck').textContent = `${name}님의 천고는 재성(財星)과 인성(印星)의 조합이 특별합니다. 특히 지지(地支)에서 축(丑), 미(未), 술(戌)과 같은 '창고'를 의미하는 지지에 재성이나 인성이 위치하여 천고가 강한 형상입니다. 이는 물질적 풍요와 행운이 축적되어 있음을 의미하며, 특히 30대 후반부터 40대 초반에 그 복이 본격적으로 발현될 것으로 보입니다. 재성과 인성이 적절히 배치되어 있어 안정적인 재물 축적과 학문적 성취가 가능할 것으로 예상됩니다. 특히 금(金)과 목(木)의 조화가 잘 이루어져 있어, 창의적인 아이디어를 통해 재물을 얻을 수 있는 구조입니다. 35세 전후에 큰 재물의 기회가 있을 것으로 보이며, 이는 하늘이 부여한 천고의 발현이 될 것입니다.`;
-            
-            // 천역 표시
-            document.getElementById('heavenlyDuty').textContent = `${name}님의 천역은 관성(官星)의 특별한 배치에서 찾을 수 있습니다. 정관(正官)이 강하게 작용하여 규율과 질서를 중시하는 성향이 있으며, 이는 사회적 책임과 의무를 다하는 데 적합한 구조입니다. 특히 관성과 인성이 조화롭게 배치되어 있어, 공직이나 법률, 규율과 관련된 분야에서 천역을 수행할 가능성이 높습니다. 35세 전후에 중요한 공직이나 사회적 역할을 맡게 될 가능성이 있으며, 이는 하늘이 부여한 천역을 수행하는 계기가 될 것입니다. 관성의 강한 작용은 리더십과 책임감을 의미하며, 이는 사회적 기여와 발전에 큰 역할을 할 수 있음을 시사합니다.`;
-            
-            // 천문 표시
-            document.getElementById('heavenlyPattern').textContent = `${name}님의 천문은 인성(印星)의 특별한 작용에서 찾을 수 있습니다. 정인(正印)이 자(子)나 해(亥) 지지에 위치하여 학문적 통찰력과 연구 능력이 뛰어난 형상입니다. 특히 인성과 관성이 조화롭게 배치되어 있어, 깊은 통찰과 패턴 인식을 통한 새로운 지식의 창출이 가능합니다. 이는 단순한 지식의 축적이 아닌, 깊은 통찰을 통한 새로운 패턴의 발견과 이해를 가능하게 합니다. 40대 중반부터 본격적인 학문적 성취나 연구 성과가 나타날 것으로 예상되며, 이는 하늘이 부여한 천문의 발현이 될 것입니다. 특히 수(水)와 목(木)의 조화가 학문적 통찰력을 더욱 강화시킬 것으로 보입니다.`;
-            
-            // 천예 표시
-            document.getElementById('heavenlyArt').textContent = `${name}님의 천예는 상관(傷官)의 특별한 작용에서 찾을 수 있습니다. 상관이 강하게 작용하여 창의적인 예술 재능이 두드러지는 형상입니다. 특히 화(火)와 수(水) 오행이 조화롭게 배치되어 있어 예술적 감성이 풍부하며, 음악이나 미술 같은 예술 분야에서 뛰어난 성과를 낼 수 있는 구조입니다. 이는 단순한 기술적 능력이 아닌, 창의적인 표현과 혁신적인 아이디어를 가능하게 합니다. 25-30세 사이에 예술적 재능이 본격적으로 발현될 것으로 보이며, 특히 디자인이나 미디어 아트 분야에서 성공할 가능성이 높습니다. 상관과 정인의 조화는 예술적 통찰력과 표현력을 더욱 강화시킬 것으로 예상됩니다.`;
-
-            // 천간충 분석 결과
-            const stemConflictElement = document.getElementById('heavenlyStemConflict');
-            if (stemConflictElement) {
-                stemConflictElement.textContent = generateStemConflictAnalysis(analysisResult.stemConflict);
+            // 결과 섹션 표시 및 스크롤
+            const resultSection = document.querySelector('.result-section');
+            if (resultSection) {
+                resultSection.style.display = 'block';
+                resultSection.scrollIntoView({ behavior: 'smooth' });
             }
+
         } catch (error) {
             alert(error.message);
+            console.error('Error:', error);
         } finally {
             setLoading(false);
         }
     });
 
-    function displayResults(calculateResult, analysisResult) {
-        // 기존 결과 표시
-        displayBasicResults(calculateResult, analysisResult);
+    function displayResults(result) {
+        if (!result) return;
+
+        const resultSection = document.querySelector('.result-section');
+        if (!resultSection) return;
+
+        // 결과 섹션 초기화
+        resultSection.innerHTML = '';
+
+        // 사주 차트 섹션 생성
+        const chartSection = document.createElement('div');
+        chartSection.className = 'saju-chart-section';
+        chartSection.innerHTML = `
+            <h3>사주 팔자</h3>
+            <div class="saju-chart">
+                ${['year', 'month', 'day', 'hour'].map(pillar => `
+                    <div class="${pillar}-pillar pillar">
+                        <div class="pillar-label">${
+                            pillar === 'year' ? '年' :
+                            pillar === 'month' ? '月' :
+                            pillar === 'day' ? '日' : '時'
+                        }</div>
+                        <div class="heavenly-stem">${result[pillar]?.stem || ''}</div>
+                        <div class="earthly-branch">${result[pillar]?.branch || ''}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        resultSection.appendChild(chartSection);
+
+        // 오행 분석 섹션 생성
+        if (result.elements) {
+            const elementalSection = document.createElement('div');
+            elementalSection.className = 'elemental-analysis-section';
+            elementalSection.innerHTML = `
+                <h3>오행 분석</h3>
+                <div class="elemental-analysis">
+                    ${Object.entries(result.elements).map(([element, value]) => `
+                        <div class="element-row">
+                            <span class="element-name">${element}</span>
+                            <div class="element-bar-container">
+                                <div class="element-bar" style="width: ${value * 100}%"></div>
+                            </div>
+                            <span class="element-value">${Math.round(value * 100)}%</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            resultSection.appendChild(elementalSection);
+        }
+
+        // 인생시기별 운세 섹션 생성
+        if (result.lifeStages) {
+            const lifeStagesSection = document.createElement('div');
+            lifeStagesSection.className = 'life-stages-section';
+            lifeStagesSection.innerHTML = `
+                <h3>인생시기별 운세</h3>
+                <div class="analysis-content">
+                    <div class="stage-group">
+                        <h4>초년운 (0~15세)</h4>
+                        <div id="earlyLife" class="stage-content">
+                            ${result.lifeStages.earlyLife?.split('\n').map(line => `<p>${line}</p>`).join('') || ''}
+                        </div>
+                    </div>
+                    <div class="stage-group">
+                        <h4>청년운 (16~30세)</h4>
+                        <div id="youthLife" class="stage-content">
+                            ${result.lifeStages.youthLife?.split('\n').map(line => `<p>${line}</p>`).join('') || ''}
+                        </div>
+                    </div>
+                    <div class="stage-group">
+                        <h4>중년운 (31~45세)</h4>
+                        <div id="middleLife" class="stage-content">
+                            ${result.lifeStages.middleLife?.split('\n').map(line => `<p>${line}</p>`).join('') || ''}
+                        </div>
+                    </div>
+                    <div class="stage-group">
+                        <h4>장년운 (46~60세)</h4>
+                        <div id="matureLife" class="stage-content">
+                            ${result.lifeStages.matureLife?.split('\n').map(line => `<p>${line}</p>`).join('') || ''}
+                        </div>
+                    </div>
+                    <div class="stage-group">
+                        <h4>노년운 (61세 이후)</h4>
+                        <div id="elderLife" class="stage-content">
+                            ${result.lifeStages.elderLife?.split('\n').map(line => `<p>${line}</p>`).join('') || ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+            resultSection.appendChild(lifeStagesSection);
+        }
+
+        // 나머지 분석 결과 섹션들 생성
+        const sections = [
+            { id: 'basicInfo', title: '기본 정보', content: result.basicInfo },
+            { id: 'personality', title: '성격 분석', content: result.personality },
+            { id: 'career', title: '적성 직업', content: result.career },
+            { id: 'health', title: '건강 분석', content: result.health },
+            { id: 'relationships', title: '대인관계', content: result.relationships },
+            { id: 'wealth', title: '재물운', content: result.wealth },
+            { id: 'luck', title: '운세 분석', content: result.luck },
+            { id: 'advice', title: '조언', content: result.advice }
+        ];
+
+        const analysisContainer = document.createElement('div');
+        analysisContainer.className = 'analysis-container';
         
-        // 새로운 천(天) 관련 결과 표시
-        displayHeavenlyResults(analysisResult);
-    }
-
-    function displayBasicResults(calculateResult, analysisResult) {
-        // 사주 차트 표시
-        const pillars = ['year', 'month', 'day', 'hour'];
-        pillars.forEach(pillar => {
-            const pillarElement = document.querySelector(`.${pillar}-pillar`);
-            if (pillarElement) {
-                const stemElement = pillarElement.querySelector('.heavenly-stem');
-                const branchElement = pillarElement.querySelector('.earthly-branch');
-                if (stemElement) stemElement.textContent = calculateResult[pillar].stem;
-                if (branchElement) branchElement.textContent = calculateResult[pillar].branch;
+        sections.forEach(section => {
+            if (section.content) {
+                const sectionElement = document.createElement('div');
+                sectionElement.className = 'analysis-section';
+                sectionElement.innerHTML = `
+                    <h3>${section.title}</h3>
+                    <div class="analysis-content">
+                        ${(typeof section.content === 'string' ? section.content.split('\n') : [])
+                            .map(line => `<p>${line}</p>`).join('')}
+                    </div>
+                `;
+                analysisContainer.appendChild(sectionElement);
             }
         });
 
-        // 기본 분석 결과 표시
-        const basicElements = {
-            basicInfo: analysisResult.basicInfo,
-            personality: analysisResult.personality,
-            career: analysisResult.career,
-            health: analysisResult.health,
-            relationships: analysisResult.relationships,
-            love: analysisResult.love,
-            wealth: analysisResult.wealth,
-            luck: analysisResult.luck,
-            advice: analysisResult.advice
-        };
-
-        Object.entries(basicElements).forEach(([id, content]) => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.textContent = content;
-            }
-        });
-    }
-
-    function displayHeavenlyResults(analysisResult) {
-        // 천격 분석 결과
-        const patternElement = document.getElementById('heavenlyPattern');
-        if (patternElement) {
-            patternElement.textContent = generatePatternAnalysis(analysisResult.pattern);
-        }
-
-        // 천복 분석 결과
-        const fortuneElement = document.getElementById('heavenlyFortune');
-        if (fortuneElement) {
-            fortuneElement.textContent = generateFortuneAnalysis(analysisResult.fortune);
-        }
-
-        // 천시 분석 결과
-        const timingElement = document.getElementById('heavenlyTiming');
-        if (timingElement) {
-            timingElement.textContent = generateTimingAnalysis(analysisResult.timing);
-        }
-
-        // 천수 분석 결과
-        const longevityElement = document.getElementById('heavenlyLongevity');
-        if (longevityElement) {
-            longevityElement.textContent = generateLongevityAnalysis(analysisResult.longevity);
-        }
-
-        // 천재 분석 결과
-        const talentElement = document.getElementById('heavenlyTalent');
-        if (talentElement) {
-            talentElement.textContent = generateTalentAnalysis(analysisResult.talent);
-        }
-
-        // 천명 분석 결과
-        const destinyElement = document.getElementById('heavenlyDestiny');
-        if (destinyElement) {
-            destinyElement.textContent = generateDestinyAnalysis(analysisResult.destiny);
-        }
-
-        // 천덕 분석 결과
-        const virtueElement = document.getElementById('heavenlyVirtue');
-        if (virtueElement) {
-            virtueElement.textContent = generateVirtueAnalysis(analysisResult.virtue);
-        }
-
-        // 천요 분석 결과
-        const weaknessElement = document.getElementById('heavenlyWeakness');
-        if (weaknessElement) {
-            weaknessElement.textContent = generateWeaknessAnalysis(analysisResult.weakness);
-        }
-
-        // 천인 분석 결과
-        const authorityElement = document.getElementById('heavenlyAuthority');
-        if (authorityElement) {
-            authorityElement.textContent = generateAuthorityAnalysis(analysisResult.authority);
-        }
-
-        // 천부 분석 결과
-        const giftElement = document.getElementById('heavenlyGift');
-        if (giftElement) {
-            giftElement.textContent = generateGiftAnalysis(analysisResult.gift);
-        }
-
-        // 천상 분석 결과
-        const appearanceElement = document.getElementById('heavenlyAppearance');
-        if (appearanceElement) {
-            appearanceElement.textContent = generateAppearanceAnalysis(analysisResult.appearance);
-        }
-
-        // 천식 분석 결과
-        const sustenanceElement = document.getElementById('heavenlySustenance');
-        if (sustenanceElement) {
-            sustenanceElement.textContent = generateSustenanceAnalysis(analysisResult.sustenance);
-        }
-
-        // 천귀 분석 결과
-        const nobilityElement = document.getElementById('heavenlyNobility');
-        if (nobilityElement) {
-            nobilityElement.textContent = generateNobilityAnalysis(analysisResult.nobility);
-        }
-
-        // 천살 분석 결과
-        const obstacleElement = document.getElementById('heavenlyObstacle');
-        if (obstacleElement) {
-            obstacleElement.textContent = generateObstacleAnalysis(analysisResult.obstacle);
-        }
-
-        // 천권 분석 결과
-        const powerElement = document.getElementById('heavenlyPower');
-        if (powerElement) {
-            powerElement.textContent = generatePowerAnalysis(analysisResult.power);
-        }
-
-        // 천간합 분석 결과
-        const stemCombinationElement = document.getElementById('heavenlyStemCombination');
-        if (stemCombinationElement) {
-            stemCombinationElement.textContent = generateStemCombinationAnalysis(analysisResult.stemCombination);
-        }
-
-        // 천간충 분석 결과
-        const stemConflictElement = document.getElementById('heavenlyStemConflict');
-        if (stemConflictElement) {
-            stemConflictElement.textContent = generateStemConflictAnalysis(analysisResult.stemConflict);
-        }
-    }
-
-    // 분석 결과 생성 함수들
-    function generatePatternAnalysis(pattern) {
-        return `당신의 천격은 ${pattern.overallPattern}의 조화를 보여주고 있습니다. 
-        천간의 조화: ${pattern.stemHarmony.join(', ')}
-        지지의 조화: ${pattern.branchHarmony.join(', ')}`;
-    }
-
-    function generateFortuneAnalysis(fortune) {
-        return `당신의 천복은 ${fortune.type}의 형태를 보여주고 있습니다. 
-        복의 강도: ${fortune.strength}
-        발현 시기: ${fortune.timing}`;
-    }
-
-    function generateTimingAnalysis(timing) {
-        return `당신의 천시는 다음과 같습니다:
-        주요 시기: ${timing.majorTiming}
-        부가 시기: ${timing.minorTiming}
-        일일 시기: ${timing.dailyTiming}`;
-    }
-
-    function generateLongevityAnalysis(longevity) {
-        return `당신의 천수는 다음과 같습니다:
-        건강 패턴: ${longevity.healthPattern.type}
-        건강 조언: ${longevity.healthAdvice}`;
-    }
-
-    function generateTalentAnalysis(talent) {
-        return `당신의 천재는 다음과 같습니다:
-        재능 유형: ${talent.type}
-        적합 분야: ${talent.fields.join(', ')}
-        재능 강도: ${talent.strength}`;
-    }
-
-    function generateDestinyAnalysis(destiny) {
-        return `당신의 천명은 다음과 같습니다:
-        목적: ${destiny.purpose}
-        사명: ${destiny.mission}
-        영향력: ${destiny.impact}`;
-    }
-
-    function generateVirtueAnalysis(virtue) {
-        return `당신의 천덕은 다음과 같습니다:
-        덕의 유형: ${virtue.type}
-        귀인: ${virtue.benefactors.join(', ')}
-        시기: ${virtue.timing}`;
-    }
-
-    function generateWeaknessAnalysis(weakness) {
-        return `당신의 천요는 다음과 같습니다:
-        약점 유형: ${weakness.type}
-        도전 과제: ${weakness.challenge}
-        해결 방안: ${weakness.solution}`;
-    }
-
-    function generateAuthorityAnalysis(authority) {
-        return `당신의 천인은 다음과 같습니다:
-        권위 유형: ${authority.type}
-        분야: ${authority.field}
-        강도: ${authority.strength}`;
-    }
-
-    function generateGiftAnalysis(gift) {
-        return `당신의 천부는 다음과 같습니다:
-        재능 유형: ${gift.type}
-        발현 방식: ${gift.manifestation}
-        발전 방향: ${gift.development}`;
-    }
-
-    function generateAppearanceAnalysis(appearance) {
-        return `당신의 천상은 다음과 같습니다:
-        외모 유형: ${appearance.type}
-        특징: ${appearance.features.join(', ')}
-        인상: ${appearance.impression}`;
-    }
-
-    function generateSustenanceAnalysis(sustenance) {
-        return `당신의 천식은 다음과 같습니다:
-        식록 유형: ${sustenance.type}
-        수입원: ${sustenance.source}
-        안정성: ${sustenance.stability}`;
-    }
-
-    function generateNobilityAnalysis(nobility) {
-        return `당신의 천귀는 다음과 같습니다:
-        귀함 유형: ${nobility.type}
-        지위: ${nobility.status}
-        영향력: ${nobility.influence}`;
-    }
-
-    function generateObstacleAnalysis(obstacle) {
-        return `당신의 천살은 다음과 같습니다:
-        장애 유형: ${obstacle.type}
-        도전: ${obstacle.challenge}
-        해결책: ${obstacle.solution}`;
-    }
-
-    function generatePowerAnalysis(power) {
-        return `당신의 천권은 다음과 같습니다:
-        권력 유형: ${power.type}
-        영역: ${power.domain}
-        강도: ${power.strength}`;
-    }
-
-    function generateStemCombinationAnalysis(combinations) {
-        if (combinations.length === 0) {
-            return '현재 특별한 천간합이 발견되지 않았습니다.';
-        }
-        return `당신의 천간합은 다음과 같습니다:
-        ${combinations.map(combo => `${combo.stems}: ${combo.type}`).join('\n')}`;
-    }
-
-    function generateStemConflictAnalysis(conflicts) {
-        if (conflicts.length === 0) {
-            return '현재 특별한 천간충이 발견되지 않았습니다.';
-        }
-        return `당신의 천간충은 다음과 같습니다:
-        ${conflicts.map(conflict => `${conflict.stems}: ${conflict.type}`).join('\n')}`;
+        resultSection.appendChild(analysisContainer);
     }
 }); 
