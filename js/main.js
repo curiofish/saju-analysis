@@ -182,12 +182,18 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // 시간 천간 계산
     function calculateHourStem(hour) {
-        return heavenlyStems[Math.floor(hour / 2) % 10];
+        // 23시는 다음날 새벽 1시 이전까지로 처리
+        const adjustedHour = hour === 23 ? 0 : hour;
+        const stemIndex = Math.floor(adjustedHour / 2);
+        return heavenlyStems[stemIndex % 10];
     }
 
     // 시간 지지 계산
     function calculateHourBranch(hour) {
-        return earthlyBranches[Math.floor(hour / 2) % 12];
+        // 23시는 다음날 새벽 1시 이전까지로 처리
+        const adjustedHour = hour === 23 ? 0 : hour;
+        const branchIndex = Math.floor(adjustedHour / 2);
+        return earthlyBranches[branchIndex % 12];
     }
 
     // 오행 계산
@@ -1573,8 +1579,8 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         const pillars = ['year', 'month', 'day', 'hour'];
         pillars.forEach(pillar => {
             if (result[pillar]) {
-                const pillarElement = document.querySelector(`.${pillar}-pillar`);
-                if (pillarElement) {
+            const pillarElement = document.querySelector(`.${pillar}-pillar`);
+            if (pillarElement) {
                     pillarElement.querySelector('.heavenly-stem').textContent = result[pillar].stem || '';
                     pillarElement.querySelector('.earthly-branch').textContent = result[pillar].branch || '';
                 }
