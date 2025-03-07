@@ -158,10 +158,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         const baseDay = 1;
         const baseStemIndex = 5; // 己는 천간 배열의 5번째
 
-        // 날짜 차이 계산
-        const date1 = new Date(year, month - 1, day);
-        const date2 = new Date(baseYear, baseMonth - 1, baseDay);
-        const diffDays = Math.floor((date1 - date2) / (1000 * 60 * 60 * 24));
+        // 날짜 차이 계산 (UTC 기준으로 계산하여 시차 문제 방지)
+        const date1 = Date.UTC(year, month - 1, day) / (1000 * 60 * 60 * 24);
+        const date2 = Date.UTC(baseYear, baseMonth - 1, baseDay) / (1000 * 60 * 60 * 24);
+        const diffDays = Math.floor(date1 - date2);
 
         // 천간 인덱스 계산 (음수 처리 포함)
         let stemIndex = (baseStemIndex + diffDays) % 10;
@@ -178,10 +178,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         const baseDay = 1;
         const baseBranchIndex = 11; // 亥는 지지 배열의 11번째
 
-        // 날짜 차이 계산
-        const date1 = new Date(year, month - 1, day);
-        const date2 = new Date(baseYear, baseMonth - 1, baseDay);
-        const diffDays = Math.floor((date1 - date2) / (1000 * 60 * 60 * 24));
+        // 날짜 차이 계산 (UTC 기준으로 계산하여 시차 문제 방지)
+        const date1 = Date.UTC(year, month - 1, day) / (1000 * 60 * 60 * 24);
+        const date2 = Date.UTC(baseYear, baseMonth - 1, baseDay) / (1000 * 60 * 60 * 24);
+        const diffDays = Math.floor(date1 - date2);
 
         // 지지 인덱스 계산 (음수 처리 포함)
         let branchIndex = (baseBranchIndex + diffDays) % 12;
@@ -212,26 +212,42 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // 사주 계산
     function calculateSaju(year, month, day, hour) {
+        // 입력값을 그대로 문자열로 저장
+        const yearStr = year;
+        const monthStr = month;
+        const dayStr = day;
+        const hourStr = hour;
+
+        // 계산용 숫자 변환 (Date 객체 생성 시에만 사용)
+        const yearNum = parseInt(year);
+        const monthNum = parseInt(month);
+        const dayNum = parseInt(day);
+        const hourNum = parseInt(hour);
+
         return {
-                year: {
-                stem: calculateYearStem(year),
-                branch: calculateYearBranch(year),
-                element: calculateFiveElement(calculateYearStem(year))
-                },
-                month: {
-                stem: calculateMonthStem(year, month),
-                branch: calculateMonthBranch(month),
-                element: calculateFiveElement(calculateMonthStem(year, month))
-                },
-                day: {
-                stem: calculateDayStem(year, month, day),
-                branch: calculateDayBranch(year, month, day),
-                element: calculateFiveElement(calculateDayStem(year, month, day))
-                },
-                hour: {
-                stem: calculateHourStem(hour),
-                branch: calculateHourBranch(hour),
-                element: calculateFiveElement(calculateHourStem(hour))
+            year: {
+                stem: calculateYearStem(yearNum),
+                branch: calculateYearBranch(yearNum),
+                element: calculateFiveElement(calculateYearStem(yearNum)),
+                value: yearStr
+            },
+            month: {
+                stem: calculateMonthStem(yearNum, monthNum),
+                branch: calculateMonthBranch(monthNum),
+                element: calculateFiveElement(calculateMonthStem(yearNum, monthNum)),
+                value: monthStr
+            },
+            day: {
+                stem: calculateDayStem(yearNum, monthNum, dayNum),
+                branch: calculateDayBranch(yearNum, monthNum, dayNum),
+                element: calculateFiveElement(calculateDayStem(yearNum, monthNum, dayNum)),
+                value: dayStr
+            },
+            hour: {
+                stem: calculateHourStem(hourNum),
+                branch: calculateHourBranch(hourNum),
+                element: calculateFiveElement(calculateHourStem(hourNum)),
+                value: hourStr
             }
         };
     }
@@ -1493,7 +1509,7 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         };
     }
 
-    // 시간 변환 및 검증 함수
+    // 시간 변환 및 검증 함수 수정
     function validateAndConvertHour(hour) {
         if (!hour || hour.trim() === '') {
             throw new Error('시간을 입력해주세요.');
@@ -1503,7 +1519,7 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         if (isNaN(hourNum) || hourNum < 0 || hourNum > 23) {
             throw new Error('올바른 시간을 입력해주세요 (0-23).');
         }
-        return hourNum;
+        return hour; // 원본 문자열 반환
     }
 
     // 폼 제출 이벤트 핸들러 수정
@@ -1512,35 +1528,46 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         setLoading(true);
 
         try {
-            // 입력값 가져오기
+            // 입력값을 문자열 그대로 가져오기
             const name = document.getElementById('name').value;
-            const year = parseInt(document.getElementById('birthYear').value);
-            const month = parseInt(document.getElementById('birthMonth').value);
-            const day = parseInt(document.getElementById('birthDay').value);
-            const isLunar = document.getElementById('isLunar').checked;
-            
-            // 시간 입력 처리 - 24시간제만 사용
+            const yearInput = document.getElementById('birthYear').value;
+            const monthInput = document.getElementById('birthMonth').value;
+            const dayInput = document.getElementById('birthDay').value;
             const hourInput = document.getElementById('birthHour').value;
-            const hour = validateAndConvertHour(hourInput);
+            const isLunar = document.getElementById('isLunar').checked;
 
-            // 날짜 유효성 검사
+            // 유효성 검사를 위한 숫자 변환
+            const year = parseInt(yearInput);
+            const month = parseInt(monthInput);
+            const day = parseInt(dayInput);
+            const hour = parseInt(hourInput);
+
+            // 유효성 검사
+            if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hour)) {
+                throw new Error('날짜와 시간은 숫자로 입력해주세요.');
+            }
+
             if (!validateDate(year, month, day)) {
                 throw new Error('유효하지 않은 날짜입니다. 날짜를 다시 확인해주세요.');
             }
 
-            // 사주 계산에 사용할 날짜 값을 직접 사용
-            const saju = calculateSaju(year, month, day, hour);
+            if (hour < 0 || hour > 23) {
+                throw new Error('시간은 0-23 사이의 값을 입력해주세요.');
+            }
+
+            // 사주 계산 - 문자열 그대로 전달
+            const saju = calculateSaju(yearInput, monthInput, dayInput, hourInput);
             const elements = analyzeFiveElements(saju);
             const result = analyzeResult(saju, elements);
 
             // 결과 표시
             displayResults(result);
             
-            // 결과 섹션 표시 및 스크롤
+            // 결과 섹션으로 스크롤
             const resultSection = document.querySelector('.result-section');
             if (resultSection) {
                 resultSection.style.display = 'block';
-            resultSection.scrollIntoView({ behavior: 'smooth' });
+                resultSection.scrollIntoView({ behavior: 'smooth' });
             }
 
         } catch (error) {
@@ -1555,9 +1582,17 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         const resultSection = document.querySelector('.result-section');
         resultSection.style.display = 'block';
 
+        // 생년월일시 표시 - 원본 값 그대로 사용
+        const birthInfo = `
+            <div class="analysis-detail">
+                <dt>생년월일시</dt>
+                <dd>${result.year.value}년 ${result.month.value}월 ${result.day.value}일 ${result.hour.value}시</dd>
+            </div>
+        `;
+
         // 각 섹션의 내용 업데이트
         const sections = {
-            'basic-info': generateBasicInfoContent(result),
+            'basic-info': birthInfo + generateBasicInfoContent(result),
             'personality': result.personality || '',
             'career': result.career || '',
             'relationships': result.relationships || '',
@@ -1579,28 +1614,8 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         resultSection.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // 사주 차트 업데이트 함수
-    function updateSajuChart(result) {
-        const pillars = ['year', 'month', 'day', 'hour'];
-        pillars.forEach(pillar => {
-            if (result[pillar]) {
-                const pillarElement = document.querySelector(`.${pillar}-pillar`);
-                if (pillarElement) {
-                    const stemElement = pillarElement.querySelector('.heavenly-stem');
-                    const branchElement = pillarElement.querySelector('.earthly-branch');
-                    
-                    if (stemElement) {
-                        stemElement.textContent = result[pillar].stem || '';
-                        stemElement.style.display = 'block';
-                    }
-                    if (branchElement) {
-                        branchElement.textContent = result[pillar].branch || '';
-                        branchElement.style.display = 'block';
-                    }
-                }
-            }
-        });
-    }
+    // 사주 차트 관련 함수들 제거
+    // updateSajuChart 함수 제거
 
     function generateBasicInfoContent(result) {
         let content = '';

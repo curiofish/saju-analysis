@@ -1,97 +1,59 @@
 /* 결과 섹션 스타일 */
 .result-section {
-    background: #fff;
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    margin-top: 2rem;
-}
-
-/* 분석 결과 스타일 */
-.analysis-result {
-    margin-top: 2rem;
+    display: none;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .analysis-section {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
+    margin-bottom: 30px;
 }
 
-.analysis-section:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.analysis-section h3 {
-    color: #2c3e50;
-    margin-bottom: 1rem;
-    font-size: 1.3rem;
-    border-bottom: 2px solid #4a90e2;
-    padding-bottom: 0.5rem;
+.analysis-title {
+    color: #333;
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
 }
 
 .analysis-content {
-    font-size: 1.1rem;
+    color: #666;
     line-height: 1.6;
-    color: #333;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
 }
 
-/* 오행 분석 차트 스타일 */
-.elemental-chart {
-    margin-top: 1rem;
+.analysis-detail {
+    margin-bottom: 15px;
 }
 
-.element-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-    padding: 0.8rem;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-}
-
-.element-row:hover {
-    transform: translateX(5px);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-}
-
-.element-name {
-    width: 80px;
+.analysis-detail dt {
     font-weight: bold;
-    color: #2c3e50;
-    font-size: 1.2rem;
+    color: #444;
+    margin-bottom: 5px;
 }
 
-.element-bar-container {
-    flex-grow: 1;
-    height: 24px;
-    background: #f1f1f1;
-    border-radius: 12px;
-    overflow: hidden;
-    margin: 0 1rem;
+.analysis-detail dd {
+    margin-left: 0;
+    margin-bottom: 10px;
+    color: #666;
 }
 
-.element-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #4a90e2, #357abd);
-    border-radius: 12px;
-    transition: width 1s ease-in-out;
-}
+/* 결과 섹션 반응형 스타일 */
+@media (max-width: 768px) {
+    .result-section {
+        padding: 15px;
+    }
 
-.element-value {
-    width: 60px;
-    text-align: right;
-    font-weight: bold;
-    color: #2c3e50;
+    .analysis-title {
+        font-size: 1.3em;
+    }
+
+    .analysis-content {
+        font-size: 0.9em;
+    }
 }
 
 /* 맨 위로 가기 버튼 스타일 */
@@ -142,39 +104,6 @@
     background-color: #357abd;
     transform: translateY(-3px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-    .element-row {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 1rem;
-    }
-
-    .element-name,
-    .element-value {
-        width: 100%;
-        text-align: left;
-        margin-bottom: 0.5rem;
-    }
-
-    .element-bar-container {
-        width: 100%;
-        margin: 0.5rem 0;
-    }
-
-    .scroll-to-top,
-    .download-pdf {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
-        bottom: 20px;
-    }
-
-    .download-pdf {
-        right: 70px;
-    }
 }
 
 /* 프린트 스타일 */
