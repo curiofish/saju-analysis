@@ -1617,6 +1617,24 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         const analysisResult = document.createElement('div');
         analysisResult.className = 'analysis-result';
 
+        // 오행 분석 섹션 생성
+        const elementalAnalysisSection = document.createElement('div');
+        elementalAnalysisSection.className = 'elemental-analysis-section';
+        elementalAnalysisSection.innerHTML = `
+            <h3>오행 분석</h3>
+            <div class="elemental-analysis">
+                ${Object.entries(result.elements || {}).map(([element, value]) => `
+                    <div class="element-row">
+                        <span class="element-name">${element}</span>
+                        <div class="element-bar-container">
+                            <div class="element-bar" style="width: ${value * 100}%"></div>
+                        </div>
+                        <span class="element-value">${Math.round(value * 100)}%</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
         // 기본 정보 섹션 생성
         const basicInfoSection = document.createElement('div');
         basicInfoSection.className = 'basic-info-section';
@@ -1652,7 +1670,6 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
 
         // 나머지 섹션들 생성
         const otherSections = [
-            { id: 'elementalAnalysis', title: '오행 분석', content: result.elements },
             { id: 'personality', title: '성격 분석', content: result.personality },
             { id: 'career', title: '적성 직업', content: result.career },
             { id: 'health', title: '건강 분석', content: result.health },
@@ -1664,23 +1681,45 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
             if (!section.content) return '';
             
             let sectionContent = '';
-            if (section.id === 'elementalAnalysis') {
+            if (section.id === 'personality') {
                 sectionContent = `
-                    <div class="elemental-analysis">
-                        ${Object.entries(section.content).map(([element, value]) => `
-                            <div class="element-row">
-                                <span class="element-name">${element}</span>
-                                <div class="element-bar-container">
-                                    <div class="element-bar" style="width: ${value * 100}%"></div>
-                                </div>
-                                <span class="element-value">${Math.round(value * 100)}%</span>
-                            </div>
-                        `).join('')}
+                    <div class="personality-analysis">
+                        ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
                     </div>
                 `;
-            } else {
+            } else if (section.id === 'career') {
                 sectionContent = `
-                    <div class="analysis-content">
+                    <div class="career-analysis">
+                        ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
+                    </div>
+                `;
+            } else if (section.id === 'health') {
+                sectionContent = `
+                    <div class="health-analysis">
+                        ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
+                    </div>
+                `;
+            } else if (section.id === 'relationships') {
+                sectionContent = `
+                    <div class="relationships-analysis">
+                        ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
+                    </div>
+                `;
+            } else if (section.id === 'wealth') {
+                sectionContent = `
+                    <div class="wealth-analysis">
+                        ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
+                    </div>
+                `;
+            } else if (section.id === 'luck') {
+                sectionContent = `
+                    <div class="luck-analysis">
+                        ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
+                    </div>
+                `;
+            } else if (section.id === 'advice') {
+                sectionContent = `
+                    <div class="advice-analysis">
                         ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
                     </div>
                 `;
@@ -1697,9 +1736,10 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         // 결과 섹션에 모든 요소 추가
         resultSection.innerHTML = '';
         resultSection.appendChild(chartSection);
+        analysisResult.appendChild(elementalAnalysisSection);
         analysisResult.appendChild(basicInfoSection);
         analysisResult.appendChild(lifeStagesSection);
-        analysisResult.innerHTML += otherSections;
+        analysisResult.innerHTML += otherSections.replace(/elementalAnalysis-section.*?<\/div>/s, '');
         resultSection.appendChild(analysisResult);
     }
 }); 
