@@ -710,4 +710,142 @@ header h2 {
     .result-section h3 {
         font-size: 1.2rem;
     }
+}
+
+/* 입력 폼 스타일 */
+.input-form {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    max-width: 600px;
+}
+
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.datetime-section {
+    background: rgba(52, 152, 219, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(52, 152, 219, 0.2);
+    margin-bottom: 2rem;
+}
+
+.datetime-section h3 {
+    color: #2c3e50;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 2px solid rgba(52, 152, 219, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.datetime-section h3::before {
+    content: '📅';
+    font-size: 1.4rem;
+}
+
+.input-group {
+    margin-bottom: 1.2rem;
+    position: relative;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #34495e;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #2c3e50;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    outline: none;
+}
+
+.name-section {
+    margin-bottom: 2rem;
+}
+
+.name-section label {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* 다크모드 대응 */
+@media (prefers-color-scheme: dark) {
+    .input-form {
+        background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    }
+
+    .datetime-section {
+        background: rgba(52, 152, 219, 0.1);
+        border-color: rgba(52, 152, 219, 0.3);
+    }
+
+    .datetime-section h3 {
+        color: #ecf0f1;
+        border-bottom-color: rgba(52, 152, 219, 0.4);
+    }
+
+    .input-group label {
+        color: #e2e8f0;
+    }
+
+    .input-group input,
+    .input-group select {
+        background: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .name-section label {
+        color: #e2e8f0;
+    }
+}
+
+/* 반응형 대응 */
+@media (max-width: 768px) {
+    .input-form {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .datetime-section {
+        padding: 1rem;
+    }
+
+    .datetime-section h3 {
+        font-size: 1.1rem;
+    }
+
+    .input-group input,
+    .input-group select {
+        padding: 0.7rem;
+    }
 } 

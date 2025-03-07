@@ -35,27 +35,34 @@
         <main>
             <section class="input-section">
                 <h2>생년월일시 입력</h2>
-                <form id="sajuForm">
-                    <div class="form-group">
-                        <label for="name">이름</label>
-                        <input type="text" id="name" name="name" required placeholder="이름을 입력하세요">
+                <form id="sajuForm" class="input-form">
+                    <div class="datetime-section">
+                        <h3>생년월일시 입력</h3>
+                        <div class="input-group">
+                            <label for="year">년도</label>
+                            <select id="year" name="year" required></select>
+                        </div>
+                        <div class="input-group">
+                            <label for="month">월</label>
+                            <select id="month" name="month" required></select>
+                        </div>
+                        <div class="input-group">
+                            <label for="day">일</label>
+                            <select id="day" name="day" required></select>
+                        </div>
+                        <div class="input-group">
+                            <label for="hour">시간</label>
+                            <select id="hour" name="hour" required></select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="birthYear">태어난 해</label>
-                        <input type="number" id="birthYear" name="birthYear" required min="1900" max="2024" placeholder="예) 1990">
+
+                    <div class="name-section">
+                        <div class="input-group">
+                            <label for="userName">이름</label>
+                            <input type="text" id="userName" name="userName" required placeholder="이름을 입력하세요">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="birthMonth">태어난 달</label>
-                        <input type="number" id="birthMonth" name="birthMonth" required min="1" max="12" placeholder="예) 3">
-                    </div>
-                    <div class="form-group">
-                        <label for="birthDay">태어난 날</label>
-                        <input type="number" id="birthDay" name="birthDay" required min="1" max="31" placeholder="예) 15">
-                    </div>
-                    <div class="form-group">
-                        <label for="birthHour">태어난 시각 (24시간제)</label>
-                        <input type="number" id="birthHour" name="birthHour" required min="0" max="23" placeholder="예) 13">
-                    </div>
+
                     <div class="form-group">
                         <label for="isLunar">음력</label>
                         <div class="checkbox-wrapper">
@@ -75,7 +82,7 @@
                         <label for="location">태어난 지역</label>
                         <input type="text" id="location" name="location" placeholder="예: 서울시 강남구">
                     </div>
-                    <button type="submit">시작하기</button>
+                    <button type="submit" class="button-primary">분석하기</button>
                 </form>
             </section>
 
