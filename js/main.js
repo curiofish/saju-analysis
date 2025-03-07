@@ -1552,15 +1552,76 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         let content = '';
         
         // 대인 관계
-        if (result.relationships && result.relationships.tendency) {
-            content += `
-                <div class="analysis-detail">
-                    <dt>대인 관계</dt>
-                    <dd>${result.relationships.tendency}</dd>
-                </div>
-            `;
+        if (result.relationships) {
+            const relationships = result.relationships;
+            if (typeof relationships === 'string') {
+                // 문자열인 경우 파싱
+                const tendencyMatch = relationships.match(/^(.*?)(?=강점:|$)/);
+                const strengthMatch = relationships.match(/강점: (.*?)(?=도전 과제:|$)/);
+                const challengeMatch = relationships.match(/도전 과제: (.*?)(?=조언:|$)/);
+                const adviceMatch = relationships.match(/조언: (.*?)$/);
+
+                if (tendencyMatch || strengthMatch || challengeMatch || adviceMatch) {
+                    content += `
+                        <div class="analysis-detail">
+                            <dt>대인 관계 분석</dt>
+                            ${tendencyMatch ? `<dd>${tendencyMatch[1].trim()}</dd>` : ''}
+                            ${strengthMatch ? `
+                                <dt>관계에서의 강점</dt>
+                                <dd>${strengthMatch[1].trim()}</dd>
+                            ` : ''}
+                            ${challengeMatch ? `
+                                <dt>관계에서의 도전 과제</dt>
+                                <dd>${challengeMatch[1].trim()}</dd>
+                            ` : ''}
+                            ${adviceMatch ? `
+                                <dt>관계 개선을 위한 조언</dt>
+                                <dd>${adviceMatch[1].trim()}</dd>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+            } else if (typeof relationships === 'object') {
+                // 객체인 경우 직접 접근
+                if (relationships.tendency || relationships.characteristics || 
+                    relationships.strengths || relationships.challenges || relationships.advice) {
+                    content += `
+                        <div class="analysis-detail">
+                            <dt>대인 관계 분석</dt>
+                            ${relationships.tendency ? `<dd>${relationships.tendency}</dd>` : ''}
+                            ${relationships.characteristics ? `
+                                <dt>관계 성향의 특징</dt>
+                                <dd>${relationships.characteristics}</dd>
+                            ` : ''}
+                            ${relationships.strengths ? `
+                                <dt>관계에서의 강점</dt>
+                                <dd>${relationships.strengths}</dd>
+                            ` : ''}
+                            ${relationships.challenges ? `
+                                <dt>관계에서의 도전 과제</dt>
+                                <dd>${relationships.challenges}</dd>
+                            ` : ''}
+                            ${relationships.advice ? `
+                                <dt>관계 개선을 위한 조언</dt>
+                                <dd>${relationships.advice}</dd>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+            }
         }
         
+        // 성격 특성
+        if (result.personality) {
+            const personality = result.personality;
+            if (typeof personality === 'string') {
+                const coreMatch = personality.match(/^(.*?)(?=강점:|$)/);
+                const strengthMatch = personality.match(/강점: (.*?)(?=약점:|$)/);
+                const weaknessMatch = personality.match(/약점: (.*?)(?=조언:|$)/);
+                const adviceMatch = personality.match(/조언: (.*?)$/);
+
+                if (coreMatch || strengthMatch || weaknessMatch || adviceMatch) {
+                    content += `
         // 관계 성향
         if (result.relationships && result.relationships.characteristics) {
             content += `
