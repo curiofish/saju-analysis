@@ -1579,167 +1579,126 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
     });
 
     function displayResults(result) {
-        if (!result) return;
-
-        const resultSection = document.querySelector('.result-section');
-        if (!resultSection) return;
-
-        // 결과 섹션 초기화
-        resultSection.style.display = 'block';
-
-        // 사주 차트 섹션 생성
-        const chartSection = document.createElement('div');
-        chartSection.className = 'saju-chart';
-        chartSection.innerHTML = `
-            <div class="year-pillar pillar">
-                <div class="pillar-label">年柱</div>
-                <div class="heavenly-stem">${result.year?.stem || ''}</div>
-                <div class="earthly-branch">${result.year?.branch || ''}</div>
-            </div>
-            <div class="month-pillar pillar">
-                <div class="pillar-label">月柱</div>
-                <div class="heavenly-stem">${result.month?.stem || ''}</div>
-                <div class="earthly-branch">${result.month?.branch || ''}</div>
-            </div>
-            <div class="day-pillar pillar">
-                <div class="pillar-label">日柱</div>
-                <div class="heavenly-stem">${result.day?.stem || ''}</div>
-                <div class="earthly-branch">${result.day?.branch || ''}</div>
-            </div>
-            <div class="hour-pillar pillar">
-                <div class="pillar-label">時柱</div>
-                <div class="heavenly-stem">${result.hour?.stem || ''}</div>
-                <div class="earthly-branch">${result.hour?.branch || ''}</div>
-            </div>
-        `;
-
-        // 분석 결과 컨테이너 생성
         const analysisResult = document.createElement('div');
         analysisResult.className = 'analysis-result';
 
-        // 오행 분석 섹션 생성
-        const elementalAnalysisSection = document.createElement('div');
-        elementalAnalysisSection.className = 'elemental-analysis-section';
-        elementalAnalysisSection.innerHTML = `
+        // 사주 차트 섹션
+        const chartSection = document.createElement('div');
+        chartSection.className = 'analysis-section';
+        chartSection.innerHTML = `
+            <h3>사주 차트</h3>
+            <div class="analysis-content">
+                <div class="analysis-group">
+                    <table class="saju-chart">
+                        <tr>
+                            <th>시주</th>
+                            <th>일주</th>
+                            <th>월주</th>
+                            <th>년주</th>
+                        </tr>
+                        <tr>
+                            <td>${result.saju.hour.stem}${result.saju.hour.branch}</td>
+                            <td>${result.saju.day.stem}${result.saju.day.branch}</td>
+                            <td>${result.saju.month.stem}${result.saju.month.branch}</td>
+                            <td>${result.saju.year.stem}${result.saju.year.branch}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        // 오행 분석 섹션
+        const elementalSection = document.createElement('div');
+        elementalSection.className = 'analysis-section';
+        elementalSection.innerHTML = `
             <h3>오행 분석</h3>
-            <div class="elemental-analysis">
-                ${Object.entries(result.elements || {}).map(([element, value]) => `
-                    <div class="element-row">
-                        <span class="element-name">${element}</span>
-                        <div class="element-bar-container">
-                            <div class="element-bar" style="width: ${value * 100}%"></div>
+            <div class="analysis-content">
+                ${Object.entries(result.elements).map(([element, value]) => `
+                    <div class="analysis-group element-${getElementClass(element)}">
+                        <h4>${getElementEmoji(element)} ${element}의 기운 (${Math.round(value * 100)}%)</h4>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: ${value * 100}%"></div>
                         </div>
-                        <span class="element-value">${Math.round(value * 100)}%</span>
                     </div>
                 `).join('')}
             </div>
         `;
 
-        // 기본 정보 섹션 생성
+        // 기본 정보 섹션
         const basicInfoSection = document.createElement('div');
-        basicInfoSection.className = 'basic-info-section';
+        basicInfoSection.className = 'analysis-section';
         basicInfoSection.innerHTML = `
             <h3>기본 정보</h3>
-            <div id="basicInfo" class="info-content">
-                ${result.basicInfo?.split('\n').map(line => `<p>${line}</p>`).join('') || ''}
+            <div class="analysis-content">
+                <div class="analysis-group">
+                    <h4>천복(天福) 분석</h4>
+                    <p>${result.fortune.type} (강도: ${Math.round(result.fortune.strength)}%)</p>
+                </div>
+                <div class="analysis-group">
+                    <h4>천시(天時) 분석</h4>
+                    <p>${result.timing.description}</p>
+                </div>
             </div>
         `;
 
-        // 인생시기별 운세 섹션 생성
+        // 인생시기별 운세 섹션
         const lifeStagesSection = document.createElement('div');
-        lifeStagesSection.className = 'life-stages-section';
+        lifeStagesSection.className = 'analysis-section';
         lifeStagesSection.innerHTML = `
             <h3>인생시기별 운세</h3>
             <div class="analysis-content">
-                ${['early', 'youth', 'middle', 'mature', 'elder'].map((stage, index) => `
-                    <div class="stage-group ${result.elements ? Object.entries(result.elements).sort(([,a], [,b]) => b - a)[0][0].toLowerCase() : ''}">
-                        <h4>${
-                            stage === 'early' ? '초년운 (0~15세)' :
-                            stage === 'youth' ? '청년운 (16~30세)' :
-                            stage === 'middle' ? '중년운 (31~45세)' :
-                            stage === 'mature' ? '장년운 (46~60세)' :
-                            '노년운 (61세 이후)'
-                        }</h4>
-                        <div id="${stage}Life" class="stage-content">
-                            ${result.lifeStages[stage + 'Life']?.split('\n').map(line => `<p>${line}</p>`).join('') || ''}
-                        </div>
+                ${result.lifeStages.map((stage, index) => `
+                    <div class="analysis-group element-${getElementClass(stage.element)}">
+                        <h4>${getLifeStageEmoji(index)} ${stage.period}</h4>
+                        <p>${stage.description}</p>
                     </div>
                 `).join('')}
             </div>
         `;
 
-        // 나머지 섹션들 생성
-        const otherSections = [
-            { id: 'personality', title: '성격 분석', content: result.personality },
-            { id: 'career', title: '적성 직업', content: result.career },
-            { id: 'health', title: '건강 분석', content: result.health },
-            { id: 'relationships', title: '대인관계', content: result.relationships },
-            { id: 'wealth', title: '재물운', content: result.wealth },
-            { id: 'luck', title: '운세 분석', content: result.luck },
-            { id: 'advice', title: '조언', content: result.advice }
-        ].map(section => {
-            if (!section.content) return '';
-            
-            let sectionContent = '';
-            if (section.id === 'personality') {
-                sectionContent = `
-                    <div class="personality-analysis">
-                        ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
-                    </div>
-                `;
-            } else if (section.id === 'career') {
-                sectionContent = `
-                    <div class="career-analysis">
-                        ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
-                    </div>
-                `;
-            } else if (section.id === 'health') {
-                sectionContent = `
-                    <div class="health-analysis">
-                        ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
-                    </div>
-                `;
-            } else if (section.id === 'relationships') {
-                sectionContent = `
-                    <div class="relationships-analysis">
-                        ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
-                    </div>
-                `;
-            } else if (section.id === 'wealth') {
-                sectionContent = `
-                    <div class="wealth-analysis">
-                        ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
-                    </div>
-                `;
-            } else if (section.id === 'luck') {
-                sectionContent = `
-                    <div class="luck-analysis">
-                        ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
-                    </div>
-                `;
-            } else if (section.id === 'advice') {
-                sectionContent = `
-                    <div class="advice-analysis">
-                        ${section.content.split('\n').map(line => `<p>${line}</p>`).join('')}
-                    </div>
-                `;
-            }
-
-            return `
-                <div class="${section.id}-section">
-                    <h3>${section.title}</h3>
-                    ${sectionContent}
-                </div>
-            `;
-        }).join('');
-
-        // 결과 섹션에 모든 요소 추가
-        resultSection.innerHTML = '';
-        resultSection.appendChild(chartSection);
-        analysisResult.appendChild(elementalAnalysisSection);
+        // 결과 표시
+        analysisResult.appendChild(chartSection);
+        analysisResult.appendChild(elementalSection);
         analysisResult.appendChild(basicInfoSection);
         analysisResult.appendChild(lifeStagesSection);
-        analysisResult.innerHTML += otherSections.replace(/elementalAnalysis-section.*?<\/div>/s, '');
+
+        // 기존 결과 제거 후 새로운 결과 추가
+        const resultSection = document.querySelector('.result-section');
+        resultSection.innerHTML = '';
         resultSection.appendChild(analysisResult);
+        resultSection.style.display = 'block';
+
+        // 다운로드 버튼 표시
+        document.getElementById('downloadPDF').style.display = 'block';
+    }
+
+    // 오행 이모지 가져오기
+    function getElementEmoji(element) {
+        const emojis = {
+            '木': '🌱',
+            '火': '🔥',
+            '土': '⛰️',
+            '金': '⚒️',
+            '水': '💧'
+        };
+        return emojis[element] || '';
+    }
+
+    // 생애 주기 이모지 가져오기
+    function getLifeStageEmoji(index) {
+        const emojis = ['🌱', '🌟', '⭐', '🌙', '🌞'];
+        return emojis[index] || '';
+    }
+
+    // 오행 클래스명 가져오기
+    function getElementClass(element) {
+        const elementClasses = {
+            '木': 'wood',
+            '火': 'fire',
+            '土': 'earth',
+            '金': 'metal',
+            '水': 'water'
+        };
+        return elementClasses[element] || '';
     }
 }); 

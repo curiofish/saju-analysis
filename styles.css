@@ -1,5 +1,5 @@
-/* 인생시기별 운세 섹션 스타일 */
-.life-stages-section {
+/* 공통 분석 섹션 스타일 */
+.analysis-section {
     padding: 1.5rem;
     background: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
     border-radius: 12px;
@@ -7,7 +7,7 @@
     margin: 1.5rem 0;
 }
 
-.life-stages-section h3 {
+.analysis-section h3 {
     color: #2c3e50;
     font-size: 1.5rem;
     margin-bottom: 1rem;
@@ -15,7 +15,7 @@
     position: relative;
 }
 
-.life-stages-section h3::after {
+.analysis-section h3::after {
     content: '';
     display: block;
     width: 50px;
@@ -25,14 +25,14 @@
     border-radius: 2px;
 }
 
-/* 시기별 그룹 컨테이너 */
+/* 분석 내용 컨테이너 */
 .analysis-content {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.stage-group {
+.analysis-group {
     background: white;
     border-radius: 8px;
     padding: 1rem;
@@ -42,12 +42,12 @@
     overflow: hidden;
 }
 
-.stage-group:hover {
+.analysis-group:hover {
     transform: translateY(-2px);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
-.stage-group h4 {
+.analysis-group h4 {
     color: #34495e;
     font-size: 1.1rem;
     margin: 0 0 0.5rem 0;
@@ -56,7 +56,7 @@
     position: relative;
 }
 
-.stage-content {
+.analysis-content p {
     color: #555;
     line-height: 1.4;
     font-size: 0.95rem;
@@ -64,62 +64,58 @@
     padding: 0.5rem 1rem;
 }
 
-/* 木 (나무) 스타일 */
-.stage-group.wood {
+/* 오행 스타일 */
+.element-wood {
     border-left: 4px solid #2ecc71;
 }
 
-.stage-group.wood h4 {
+.element-wood h4 {
     background: linear-gradient(to right, rgba(46, 204, 113, 0.1), transparent);
 }
 
-/* 火 (불) 스타일 */
-.stage-group.fire {
+.element-fire {
     border-left: 4px solid #e74c3c;
 }
 
-.stage-group.fire h4 {
+.element-fire h4 {
     background: linear-gradient(to right, rgba(231, 76, 60, 0.1), transparent);
 }
 
-/* 土 (흙) 스타일 */
-.stage-group.earth {
+.element-earth {
     border-left: 4px solid #f39c12;
 }
 
-.stage-group.earth h4 {
+.element-earth h4 {
     background: linear-gradient(to right, rgba(243, 156, 18, 0.1), transparent);
 }
 
-/* 金 (금속) 스타일 */
-.stage-group.metal {
+.element-metal {
     border-left: 4px solid #bdc3c7;
 }
 
-.stage-group.metal h4 {
+.element-metal h4 {
     background: linear-gradient(to right, rgba(189, 195, 199, 0.1), transparent);
 }
 
-/* 水 (물) 스타일 */
-.stage-group.water {
+.element-water {
     border-left: 4px solid #3498db;
 }
 
-.stage-group.water h4 {
+.element-water h4 {
     background: linear-gradient(to right, rgba(52, 152, 219, 0.1), transparent);
 }
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
-    .life-stages-section {
+    .analysis-section {
         padding: 1rem;
     }
     
-    .stage-group {
+    .analysis-group {
         padding: 0.75rem;
     }
     
-    .stage-content {
+    .analysis-content p {
         padding: 0.5rem;
         font-size: 0.9rem;
     }
@@ -127,39 +123,39 @@
 
 /* 다크 모드 지원 */
 @media (prefers-color-scheme: dark) {
-    .life-stages-section {
+    .analysis-section {
         background: linear-gradient(to bottom right, #2c3e50, #34495e);
     }
     
-    .stage-group {
+    .analysis-group {
         background: #2c3e50;
     }
     
-    .stage-group h4 {
+    .analysis-group h4 {
         color: #ecf0f1;
     }
     
-    .stage-content {
+    .analysis-content p {
         color: #bdc3c7;
     }
 
-    .stage-group.wood h4 {
+    .element-wood h4 {
         background: linear-gradient(to right, rgba(46, 204, 113, 0.2), transparent);
     }
 
-    .stage-group.fire h4 {
+    .element-fire h4 {
         background: linear-gradient(to right, rgba(231, 76, 60, 0.2), transparent);
     }
 
-    .stage-group.earth h4 {
+    .element-earth h4 {
         background: linear-gradient(to right, rgba(243, 156, 18, 0.2), transparent);
     }
 
-    .stage-group.metal h4 {
+    .element-metal h4 {
         background: linear-gradient(to right, rgba(189, 195, 199, 0.2), transparent);
     }
 
-    .stage-group.water h4 {
+    .element-water h4 {
         background: linear-gradient(to right, rgba(52, 152, 219, 0.2), transparent);
     }
 } 
