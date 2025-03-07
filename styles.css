@@ -1,236 +1,111 @@
 /* 인생시기별 운세 섹션 스타일 */
 .life-stages-section {
-    padding: 2rem;
-    background: linear-gradient(145deg, #ffffff, #f8f9fa);
-    border-radius: 20px;
-    margin: 2rem 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    background: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 1.5rem 0;
 }
 
 .life-stages-section h3 {
     color: #2c3e50;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
     text-align: center;
-    margin-bottom: 2.5rem;
-    font-size: 2rem;
-    font-weight: 700;
     position: relative;
-    padding-bottom: 1rem;
 }
 
 .life-stages-section h3::after {
     content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
+    display: block;
+    width: 50px;
     height: 3px;
-    background: linear-gradient(90deg, #4a90e2, #357abd);
-    border-radius: 3px;
+    background: linear-gradient(to right, #3498db, #2ecc71);
+    margin: 0.5rem auto;
+    border-radius: 2px;
 }
 
 /* 시기별 그룹 컨테이너 */
 .analysis-content {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .stage-group {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    border-left: 4px solid transparent;
 }
 
 .stage-group:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 .stage-group h4 {
-    color: #2c3e50;
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    padding: 1rem 1.5rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    border-radius: 12px;
-}
-
-.stage-content {
-    color: #444;
-    line-height: 1.8;
+    color: #34495e;
     font-size: 1.1rem;
-    padding: 0 1.5rem;
-}
-
-.stage-content p {
-    margin: 1rem 0;
+    margin: 0 0 0.5rem 0;
     padding-left: 1.5rem;
     position: relative;
 }
 
-.stage-content p::before {
+.stage-group h4::before {
     content: '•';
     position: absolute;
-    left: 0;
-    color: #4a90e2;
-    font-size: 1.2rem;
+    left: 0.5rem;
+    color: inherit;
 }
 
-/* 각 시기별 특색 있는 스타일 */
-.stage-group:nth-child(1) {
-    background: linear-gradient(145deg, #ffffff, #e8f6e8);
-    border: 1px solid rgba(46, 204, 113, 0.2);
+.stage-content {
+    color: #555;
+    line-height: 1.4;
+    font-size: 0.95rem;
+    margin: 0;
+    padding-left: 1.5rem;
 }
 
-.stage-group:nth-child(1) h4 {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
-    color: white;
-}
-
-.stage-group:nth-child(2) {
-    background: linear-gradient(145deg, #ffffff, #e8f4fa);
-    border: 1px solid rgba(52, 152, 219, 0.2);
-}
-
-.stage-group:nth-child(2) h4 {
-    background: linear-gradient(135deg, #3498db, #2980b9);
-    color: white;
-}
-
-.stage-group:nth-child(3) {
-    background: linear-gradient(145deg, #ffffff, #fdf1e8);
-    border: 1px solid rgba(230, 126, 34, 0.2);
-}
-
-.stage-group:nth-child(3) h4 {
-    background: linear-gradient(135deg, #e67e22, #d35400);
-    color: white;
-}
-
-.stage-group:nth-child(4) {
-    background: linear-gradient(145deg, #ffffff, #f5edf8);
-    border: 1px solid rgba(155, 89, 182, 0.2);
-}
-
-.stage-group:nth-child(4) h4 {
-    background: linear-gradient(135deg, #9b59b6, #8e44ad);
-    color: white;
-}
-
-.stage-group:nth-child(5) {
-    background: linear-gradient(145deg, #ffffff, #ebedef);
-    border: 1px solid rgba(52, 73, 94, 0.2);
-}
-
-.stage-group:nth-child(5) h4 {
-    background: linear-gradient(135deg, #34495e, #2c3e50);
-    color: white;
-}
-
-/* 시기별 아이콘 */
-.stage-group h4::before {
-    content: '';
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-    margin-right: 12px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.stage-group:nth-child(1) h4::before {
-    content: '🌱';
-}
-
-.stage-group:nth-child(2) h4::before {
-    content: '🌟';
-}
-
-.stage-group:nth-child(3) h4::before {
-    content: '⭐';
-}
-
-.stage-group:nth-child(4) h4::before {
-    content: '🌙';
-}
-
-.stage-group:nth-child(5) h4::before {
-    content: '🌞';
-}
+.stage-group:nth-child(1) { border-left-color: #3498db; }
+.stage-group:nth-child(2) { border-left-color: #2ecc71; }
+.stage-group:nth-child(3) { border-left-color: #f1c40f; }
+.stage-group:nth-child(4) { border-left-color: #e67e22; }
+.stage-group:nth-child(5) { border-left-color: #9b59b6; }
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .life-stages-section {
-        padding: 1.5rem;
-    }
-    
-    .life-stages-section h3 {
-        font-size: 1.8rem;
-        margin-bottom: 2rem;
+        padding: 1rem;
     }
     
     .stage-group {
-        padding: 1.5rem;
-    }
-    
-    .stage-group h4 {
-        font-size: 1.3rem;
-        padding: 0.8rem 1.2rem;
+        padding: 0.75rem;
     }
     
     .stage-content {
-        font-size: 1rem;
-        padding: 0 1rem;
-    }
-    
-    .stage-content p {
-        padding-left: 1.2rem;
+        padding-left: 1rem;
+        font-size: 0.9rem;
     }
 }
 
 /* 다크 모드 지원 */
 @media (prefers-color-scheme: dark) {
     .life-stages-section {
-        background: linear-gradient(145deg, #1a1a1a, #2c2c2c);
+        background: linear-gradient(to bottom right, #2c3e50, #34495e);
     }
     
     .stage-group {
-        background: #2c2c2c;
+        background: #2c3e50;
     }
     
-    .stage-group:nth-child(1) {
-        background: linear-gradient(145deg, #1a1a1a, #1e2e1e);
-    }
-    
-    .stage-group:nth-child(2) {
-        background: linear-gradient(145deg, #1a1a1a, #1e2a3a);
-    }
-    
-    .stage-group:nth-child(3) {
-        background: linear-gradient(145deg, #1a1a1a, #2e261e);
-    }
-    
-    .stage-group:nth-child(4) {
-        background: linear-gradient(145deg, #1a1a1a, #2a1e2e);
-    }
-    
-    .stage-group:nth-child(5) {
-        background: linear-gradient(145deg, #1a1a1a, #1e242a);
+    .stage-group h4 {
+        color: #ecf0f1;
     }
     
     .stage-content {
-        color: #ddd;
-    }
-    
-    .life-stages-section h3 {
-        color: #fff;
+        color: #bdc3c7;
     }
 } 
