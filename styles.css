@@ -162,37 +162,39 @@
 
 /* 사주 차트 스타일 */
 .saju-chart {
+    margin: 2rem 0;
+    overflow-x: auto;
+}
+
+.saju-chart table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 8px;
-    margin: 20px 0;
     background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    overflow: hidden;
-}
-
-.saju-chart th, .saju-chart td {
-    padding: 15px;
-    text-align: center;
-    border-radius: 10px;
-    transition: all 0.3s ease;
 }
 
 .saju-chart th {
+    padding: 15px;
+    text-align: center;
     background: linear-gradient(145deg, #f8f9fa, #e9ecef);
     color: #495057;
     font-weight: 600;
-    font-size: 0.9em;
-    text-transform: uppercase;
+    font-size: 1.1em;
+    border-radius: 10px;
 }
 
 .saju-chart td {
+    padding: 15px;
+    text-align: center;
     background: linear-gradient(145deg, #ffffff, #f8f9fa);
     font-size: 1.2em;
     font-weight: 500;
     color: #2c3e50;
+    border-radius: 10px;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
 }
 
 .saju-chart tr:hover td {
@@ -201,62 +203,70 @@
     background: linear-gradient(145deg, #ffffff, #f1f3f5);
 }
 
-/* 오행 분석 스타일 개선 */
-.element-analysis {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-    padding: 10px;
+/* 분석 결과 스타일 */
+.analysis-result {
+    margin: 2rem 0;
 }
 
-.element-group {
-    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+.analysis-detail {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
     border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.analysis-detail dt {
+    color: #2c3e50;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(52, 152, 219, 0.2);
+}
+
+.analysis-detail dd {
+    color: #34495e;
+    line-height: 1.6;
+    margin: 0 0 1rem 0;
+    padding-left: 1rem;
+}
+
+.analysis-detail dd:last-child {
+    margin-bottom: 0;
+}
+
+/* 다시하기 버튼 스타일 */
+.retry-section {
+    text-align: center;
+    margin: 3rem 0;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.retry-button {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.element-group:hover {
+.retry-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.element-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
+.retry-button:active {
+    transform: translateY(0);
 }
-
-.element-emoji {
-    font-size: 1.5em;
-}
-
-.progress-container {
-    background: rgba(0,0,0,0.05);
-    border-radius: 10px;
-    overflow: hidden;
-    height: 8px;
-    margin-top: 10px;
-}
-
-.progress-bar {
-    height: 100%;
-    border-radius: 10px;
-    transition: width 1s ease-in-out;
-}
-
-/* 오행별 프로그레스 바 색상 */
-.element-wood .progress-bar { background: linear-gradient(90deg, #76c893, #52b69a); }
-.element-fire .progress-bar { background: linear-gradient(90deg, #ff7b7b, #ff4d4d); }
-.element-earth .progress-bar { background: linear-gradient(90deg, #deb887, #d4a276); }
-.element-metal .progress-bar { background: linear-gradient(90deg, #b8b8b8, #a5a5a5); }
-.element-water .progress-bar { background: linear-gradient(90deg, #48cae4, #00b4d8); }
 
 /* 다크모드 대응 */
 @media (prefers-color-scheme: dark) {
-    .saju-chart {
+    .saju-chart table {
         background: linear-gradient(145deg, rgba(40,44,52,0.9), rgba(30,33,39,0.7));
     }
 
@@ -270,12 +280,53 @@
         color: #f8f9fa;
     }
 
-    .element-group {
-        background: linear-gradient(145deg, #343a40, #2c3e50);
+    .saju-chart tr:hover td {
+        background: linear-gradient(145deg, #3a4149, #343a40);
     }
 
-    .progress-container {
-        background: rgba(255,255,255,0.1);
+    .analysis-detail {
+        background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    }
+
+    .analysis-detail dt {
+        color: #e2e8f0;
+        border-bottom-color: rgba(52, 152, 219, 0.3);
+    }
+
+    .analysis-detail dd {
+        color: #a0aec0;
+    }
+
+    .retry-button {
+        background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        color: #e2e8f0;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .retry-section {
+        border-top-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* 반응형 대응 */
+@media (max-width: 768px) {
+    .saju-chart th,
+    .saju-chart td {
+        padding: 10px;
+        font-size: 1rem;
+    }
+
+    .analysis-detail {
+        padding: 1rem;
+    }
+
+    .analysis-detail dt {
+        font-size: 1rem;
+    }
+
+    .retry-button {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
     }
 }
 
