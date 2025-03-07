@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 로딩 상태 표시 함수
     function setLoading(isLoading) {
         submitButton.disabled = isLoading;
-        submitButton.textContent = isLoading ? '분석 중...' : '분석하기';
+        submitButton.textContent = isLoading ? '분석 중...' : '시작하기';
     }
 
     // 천간(天干) 배열
@@ -1700,7 +1700,7 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         const retrySection = document.createElement('div');
         retrySection.className = 'retry-section';
         retrySection.innerHTML = `
-            <button id="retryButton" class="retry-button">다시 해 보기</button>
+            <button id="retryButton" class="retry-button">다시 해보기</button>
         `;
         analysisResult.appendChild(retrySection);
 
@@ -1909,4 +1909,8 @@ ${info.color}계열이 당신의 행운의 색이 됩니다.
         // 입력 섹션으로 스크롤
         document.querySelector('.input-section').scrollIntoView({ behavior: 'smooth' });
     });
+
+    // 제출 버튼 초기 텍스트 설정
+    submitButton.textContent = '시작하기';
+    submitButton.className = 'button-primary';
 }); 

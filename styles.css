@@ -507,4 +507,113 @@ header h2 {
     .usage-guide li {
         font-size: 0.95rem;
     }
+}
+
+/* 버튼 공통 스타일 */
+.button-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.button-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.button-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.2);
+}
+
+.button-primary:hover::before {
+    left: 100%;
+}
+
+.button-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+}
+
+/* 다시 해보기 버튼 스타일 */
+.retry-section {
+    text-align: center;
+    margin: 3rem 0;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.retry-button {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    color: #1e293b;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.retry-button::before {
+    content: '🔄';
+    font-size: 1.2rem;
+}
+
+.retry-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #ffffff, #f8fafc);
+}
+
+.retry-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* 다크모드 대응 */
+@media (prefers-color-scheme: dark) {
+    .button-primary {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    }
+
+    .retry-button {
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+        color: #f8fafc;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .retry-button:hover {
+        background: linear-gradient(135deg, #334155, #1e293b);
+    }
+
+    .retry-section {
+        border-top-color: rgba(255, 255, 255, 0.1);
+    }
 } 
